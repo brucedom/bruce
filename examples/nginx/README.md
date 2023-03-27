@@ -18,7 +18,7 @@ The instance type is a t2.micro instance.  Alternatively you can run the user-da
 
 # Step 2
 Validate what is happening on the ec2 instance by logging in (terraform code should output connect string)
-### Note: For examples I will use Key Name: Nitecon provision your own ssh key during tf instantiation or / use existing keys as appropriate.
+### Note: For examples I will use Key Name: configset provision your own ssh key during tf instantiation or / use existing keys as appropriate.
 
 Once logged into the system take a look at your cloudinit log details by running for example: 
 ```

@@ -33,7 +33,7 @@ steps:
     dest: /usr/bin/somefile
     perm: 0775
   - template: /tmp/nginx.conf
-    remoteLocation: https://raw.githubusercontent.com/Nitecon/cfs/main/examples/nginx/templates/etc/nginx/nginx.conf
+    remoteLocation: https://raw.githubusercontent.com/configset/cfs/main/examples/nginx/templates/etc/nginx/nginx.conf
     perms: 0664
     owner: root
     group: root

@@ -12,7 +12,7 @@ steps:
   - cmd: usermod -aG docker ha
   - cmd: chown -R ha:ha /data/home-assistant
   - template: /etc/systemd/system/home-assistant.service
-    remoteLocation: https://raw.githubusercontent.com/Nitecon/cfs/main/examples/home-assistant/systemd.tpl
+    remoteLocation: https://raw.githubusercontent.com/configset/cfs/main/examples/home-assistant/systemd.tpl
     perms: 0664
     owner: root
     group: root

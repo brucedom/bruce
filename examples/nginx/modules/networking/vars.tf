@@ -27,7 +27,7 @@ variable "ec2-type"{
 
 variable "key-name"{
   type = string
-  default = "Nitecon"
+  default = "configset"
 }
 variable "createPublicIP"{
   type = bool
