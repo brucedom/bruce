@@ -18,7 +18,7 @@ var (
 func setLogger() {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	//log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-	if os.Getenv("BRUCE_DEBUG") != "" {
+	if os.Getenv("CFS_DEBUG") != "" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		return
 	}

@@ -1,4 +1,4 @@
-==== BRUCE ====
+==== CFS ====
 
 Basic runtime for uniform compute environments
 
