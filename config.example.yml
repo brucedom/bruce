@@ -1,0 +1,66 @@
+---
+## Steps are an array of operators that can be used to mutate the environment
+## NOTE: you can have 2 of the same commands with slight deviations for OS's and by using osLimits it will prevent running on OS's that do not match.
+## the current list of operators include:
+## Command: enables the ability to run an arbitrary command on the system and limit the command based on specific OS
+## Cron: Creates a cronjob based on template, user is responsible for making sure cron is installed.
+## Packages: Ability to install packages based on the locally supported os installer like dnf / yum / apt-get
+## Services: Ability to enable / restart and reconfigure and restart services based on template updates
+## Signals: Ability to send a signal to a particular process
+## Templates: Ability to create templates on the system and inject variables by values from commands or provided input data.
+## Copy: Will copy a file from several source locations [http(s)/s3/local] to a local destination
+## Tarball: Will read a tarball from [http(s)/s3/local] and extract it to a local destination of your choice.
+## PackageRepo: Will install the associated yum/atp/dnf repository for you to be able to install packages.
+##
+## Some examples of operators as steps are shown below, see documentation on how to use.
+
+steps:
+  - repoName: docker
+    repoLocation: https://download.docker.com/linux/ubuntu
+    repoType: apt
+    repoKey: https://download.docker.com/linux/ubuntu/gpg
+    osLimits: ubuntu|debian
+  - repoName: docker
+    repoLocation: https://download.docker.com/linux/fedora/docker-ce.repo
+    repoType: dnf
+    osLimits: fedora|redhat
+  - repoName: docker
+    repoLocation: https://download.docker.com/linux/centos/docker-ce.repo
+    repoType: yum
+    osLimits: centos
+  - cmd: echo "Hello World"
+  - copy: s3://somebucket/somefile.bin
+    dest: /usr/bin/somefile
+    perm: 0775
+  - template: /tmp/nginx.conf
+    remoteLocation: https://raw.githubusercontent.com/Nitecon/bruce/main/examples/nginx/templates/etc/nginx/nginx.conf
+    perms: 0664
+    owner: root
+    group: root
+    vars:
+      - type: value
+        input: nginx|apt=www-data  # uses nginx for all platforms that don't use apt installer on those use www-data
+        variable: NGINX_USER
+  - packageList:
+      - bind9-utils
+    osLimits: ubuntu:20.04|debian
+  - packageList:
+      - bind-utils
+    osLimits: fedora|redhat|centos|arch
+  - cron: foo # give it a name
+    schedule: "*/5 * * * *"
+    username: foo
+    cmd: cho "hello world" > /tmp/output.txt
+  - service: nginx
+    setEnabled: true
+    state: started # can be started / stopped
+    restartTrigger: # if these templates were altered always restart
+      - /etc/nginx/nginx.conf
+    restartAlways: false
+    osLimits: all
+  - pidFile: /var/run/nginx.pid # this will be altered to include restartTrigger to watch templates like services.
+    signal: SIGHUP #currently only supports: SIGHUP / SIGINT
+  - tarball: https://go.dev/dl/go1.19.4.linux-amd64.tar.gz
+    dest: /tmp/go
+    force: true # force will overwrite if destination exists or skip with info message if false
+    stripRoot: true # will strip the first directory from every path, useful if the tarball contains an initial directory

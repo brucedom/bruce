@@ -1,0 +1,13 @@
+project_name: bruce
+builds:
+  - main: ./cmd/
+    ldflags:
+      - -s -w -X main.version=$GITHUB_REF_NAME
+    env: [CGO_ENABLED=0]
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
