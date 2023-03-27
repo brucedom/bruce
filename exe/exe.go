@@ -1,7 +1,7 @@
 package exe
 
 import (
-	"bruce/random"
+	"cfs/random"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"

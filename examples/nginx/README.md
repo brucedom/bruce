@@ -1,6 +1,6 @@
 # NGINX Example
 
-We'll use AWS Ec2 to spin up a t2 micro and use the ec2-user data to do initial download of bruce.
+We'll use AWS Ec2 to spin up a t2 micro and use the ec2-user data to do initial download of cfs.
 Bruce will use the install.yml file within this directory to install nginx and configure it with a default vhost
 which redirects http -> https & also updates the standard html under /var/www/html/index.hml with some reconfigured variables.
 
@@ -18,7 +18,7 @@ The instance type is a t2.micro instance.  Alternatively you can run the user-da
 
 # Step 2
 Validate what is happening on the ec2 instance by logging in (terraform code should output connect string)
-### Note: For examples I will use Key Name: Nitecon provision your own ssh key during tf instantiation or / use existing keys as appropriate.
+### Note: For examples I will use Key Name: configset provision your own ssh key during tf instantiation or / use existing keys as appropriate.
 
 Once logged into the system take a look at your cloudinit log details by running for example: 
 ```
@@ -27,6 +27,6 @@ cat /var/log/cloud-init-output.log
 
 
 # Step 3
-After terraform completed and the instance stabilizes bruce should have installed everything on the system and you should be able to hit your public innstance via a browser.
+After terraform completed and the instance stabilizes cfs should have installed everything on the system and you should be able to hit your public innstance via a browser.
 
 - Enjoy

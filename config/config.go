@@ -1,10 +1,9 @@
 package config
 
 import (
-	"bruce/loader"
-	"bruce/operators"
+	"cfs/loader"
+	"cfs/operators"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
 	"os"
 )
 

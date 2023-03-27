@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# For example sake we will use the latest version of bruce
-CURVER=$(curl --silent "https://api.github.com/repos/Nitecon/bruce/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'|cut -c2-)
+# For example sake we will use the latest version of cfs
+CURVER=$(curl --silent "https://api.github.com/repos/configset/cfs/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'|cut -c2-)
 
-mkdir -p /opt/bruce/${CURVER}
-cd /opt/bruce/${CURVER}
-wget https://github.com/Nitecon/bruce/releases/download/v${CURVER}/bruce_${CURVER}_linux_amd64.tar.gz
-tar xf bruce_${CURVER}_linux_amd64.tar.gz
-ln -s /opt/bruce/${CURVER}/bruce /usr/bin/bruce
-/usr/bin/bruce --config https://raw.githubusercontent.com/Nitecon/bruce/main/examples/nginx/install.yml > /var/log/bruce.log
+mkdir -p /opt/cfs/${CURVER}
+cd /opt/cfs/${CURVER}
+wget https://github.com/configset/cfs/releases/download/v${CURVER}/cfs_${CURVER}_linux_amd64.tar.gz
+tar xf cfs_${CURVER}_linux_amd64.tar.gz
+ln -s /opt/cfs/${CURVER}/cfs /usr/bin/cfs
+/usr/bin/cfs --config https://raw.githubusercontent.com/configset/cfs/main/examples/nginx/install.yml > /var/log/cfs.log

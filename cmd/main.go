@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bruce/config"
-	"bruce/handlers"
-	"bruce/system"
+	"cfs/config"
+	"cfs/handlers"
+	"cfs/system"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/urfave/cli/v2"
 	"os"
 	"time"
 )
@@ -33,12 +32,12 @@ func main() {
 		os.Exit(1)
 	}
 	app := &cli.App{
-		Name:  "bruce",
-		Usage: "Start with: /path/to/bruce https://someinstallhost/installme.yml",
+		Name:  "cfs",
+		Usage: "Start with: /path/to/cfs https://someinstallhost/installme.yml",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "config",
-				Value: "/etc/bruce/config.yml",
+				Value: "/etc/cfs/config.yml",
 				Usage: "See docs for supported endpoints, eg: https://s3.amazonaws.com/somebucket/my_install.yml",
 			},
 		},

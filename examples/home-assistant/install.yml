@@ -2,7 +2,7 @@
 ## This config will install home assistant with docker containers.
 ## Please note: It makes use of a /data directory where everything is stored including docker containers
 ## This enables you to only have to mount /data as a storage volume without filling up the root disk.
-## Please note you should have mounted your /data volume before you run bruce.
+## Please note you should have mounted your /data volume before you run cfs.
 
 steps:
   - cmd: mkdir -p /data/{docker,home-assistant}
@@ -12,7 +12,7 @@ steps:
   - cmd: usermod -aG docker ha
   - cmd: chown -R ha:ha /data/home-assistant
   - template: /etc/systemd/system/home-assistant.service
-    remoteLocation: https://raw.githubusercontent.com/Nitecon/bruce/main/examples/home-assistant/systemd.tpl
+    remoteLocation: https://raw.githubusercontent.com/configset/cfs/main/examples/home-assistant/systemd.tpl
     perms: 0664
     owner: root
     group: root

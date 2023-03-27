@@ -1,8 +1,8 @@
 package operators
 
 import (
-	"bruce/loader"
-	"bruce/rest"
+	"cfs/loader"
+	"cfs/rest"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"os"

@@ -1,7 +1,7 @@
 package mutation
 
 import (
-	"bruce/loader"
+	"cfs/loader"
 	"github.com/rs/zerolog/log"
 	"text/template"
 )

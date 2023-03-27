@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"bruce/config"
+	"cfs/config"
 	"github.com/rs/zerolog/log"
 	"os"
 )

@@ -9,7 +9,7 @@ variable "vpc_cidr" {
 
 variable "name" {
   type = string
-  default = "bruce-test"
+  default = "cfs-test"
 }
 
 variable "environment" {
@@ -27,7 +27,7 @@ variable "ec2-type"{
 
 variable "key-name"{
   type = string
-  default = "Nitecon"
+  default = "configset"
 }
 variable "createPublicIP"{
   type = bool

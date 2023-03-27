@@ -1,11 +1,11 @@
 package operators
 
 import (
-	"bruce/exe"
-	"bruce/loader"
-	"bruce/random"
-	"bruce/system"
 	"bytes"
+	"cfs/exe"
+	"cfs/loader"
+	"cfs/random"
+	"cfs/system"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/rs/zerolog/log"
