@@ -1,0 +1,9 @@
+---
+version: v0.9
+steps:
+  - cmd: mkdir -p .build
+    osLimits: ubuntu
+  - cmd: go build -ldflags "-s -w -X main.version=v0.91" -o .build/cfs cmd/main.go
+    osLimits: ubuntu
+  - cmd: cp -f .build/cfs ~/bin/cfs
+    osLimits: ubuntu

@@ -28,7 +28,6 @@ var (
 
 func init() {
 	backupDir = fmt.Sprintf("%s%c%s", os.TempDir(), os.PathSeparator, random.String(12))
-	log.Info().Msgf("using template backup directory as: %s", backupDir)
 	os.MkdirAll(backupDir, 0775)
 }
 
@@ -53,6 +52,7 @@ func dump(field interface{}) string {
 }
 
 func (t *Template) Execute() error {
+	log.Debug().Msgf("using template backup directory as: %s", backupDir)
 	// backup existing template if exists
 	if exe.FileExists(t.Template) {
 		log.Debug().Msgf("backing up existing template: %s", t.Template)

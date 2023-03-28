@@ -17,8 +17,8 @@ var (
 
 func setLogger() {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
-	//log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-	if os.Getenv("CFS_DEBUG") != "" {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+	if version == "source" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		return
 	}
@@ -75,9 +75,27 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "search",
+				Aliases: []string{"find"},
+				Usage:   "this will search the ConfigSet repository for a related manifest",
+				Action: func(cCtx *cli.Context) error {
+					handlers.Search(cCtx.Args().First())
+					return nil
+				},
+			},
+			{
+				Name:    "view",
+				Aliases: []string{"open"},
+				Usage:   "this command opens the manifest for you to view in CLI prior to executing install",
+				Action: func(cCtx *cli.Context) error {
+					handlers.View(cCtx.Args().First())
+					return nil
+				},
+			},
 		},
 	}
-	log.Info().Msgf("Starting Bruce (Version: %s)", version)
+	log.Debug().Msgf("Starting Bruce (Version: %s)", version)
 	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal().Err(err)
