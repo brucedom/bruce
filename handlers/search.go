@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -27,8 +28,7 @@ type Manifest struct {
 }
 
 func Search(q string) error {
-	// do an http client lookup for the q string against the cfs server and print the results
-	manifestUrl := "https://configset.dev/api/manifests"
+	manifestUrl := "https://configset.com/api/manifests"
 
 	req, err := http.NewRequest("GET", manifestUrl+"?search="+q, nil)
 	if err != nil {
@@ -41,8 +41,22 @@ func Search(q string) error {
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{}
+
+	// Create a context with a 10-second timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Add the context to the request
+	req = req.WithContext(ctx)
+
 	resp, err := client.Do(req)
 	if err != nil {
+		// Check if the error is due to a timeout
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Println("Request timed out. Please check your firewall settings or try again later.")
+			return err
+		}
+
 		fmt.Println("Error making request: " + err.Error())
 		return err
 	}
