@@ -1,0 +1,7 @@
+steps:
+- cmd: echo "Hello World ${Person}" > output.txt
+- cmd: echo "Steven"
+  setEnv: Person
+- cmd: echo "Hello World ${Person}" >> output.txt
+- template: ./output2.txt
+  remoteLocation: ./template-example.txt

@@ -90,7 +90,15 @@ func ExecuteTemplate(local, remote string, vars []TVars, perms fs.FileMode) erro
 		log.Err(err).Msgf("cannot read template source %s", local)
 		return err
 	}
+
 	var content = make(map[string]string)
+	// foreach environment variable we need to load the value
+	for _, e := range os.Environ() {
+		if i := strings.Index(e, "="); i >= 0 {
+			content[e[:i]] = e[i+1:]
+		}
+	}
+	// then we override with the associated template variables
 	for _, v := range vars {
 		content[v.Variable] = loadTemplateValue(v)
 	}
@@ -164,5 +172,7 @@ func loadTemplateFromRemote(remoteLoc string) (*template.Template, error) {
 		log.Error().Err(err).Msgf("could not read remote template file: %s", remoteLoc)
 	}
 	log.Debug().Msgf("remote template read completed for: %s", remoteLoc)
-	return template.New(path.Base(remoteLoc)).Parse(string(d))
+	t := template.New(path.Base(remoteLoc))
+	t = t.Funcs(templateFuncs)
+	return t.Parse(string(d))
 }

@@ -11,6 +11,7 @@ import (
 type Command struct {
 	Cmd      string `yaml:"cmd"`
 	OsLimits string `yaml:"osLimits"`
+	SetEnv   string `yaml:"setEnv"`
 }
 
 // Execute runs the command.
@@ -34,6 +35,10 @@ func (c *Command) Execute() error {
 		} else {
 			log.Info().Str("cmd", c.Cmd).Msgf("completed executing: %s", fileName)
 			log.Debug().Msgf("Output: %s", pc.Get())
+			if len(c.SetEnv) > 0 {
+				log.Debug().Str("cmd", c.Cmd).Msgf("setting env var: %s=%s", c.SetEnv, pc.Get())
+				os.Setenv(c.SetEnv, pc.Get())
+			}
 			os.Remove(fileName)
 		}
 	} else {

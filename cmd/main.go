@@ -41,6 +41,12 @@ func main() {
 				Value: "/etc/cfs/config.yml",
 				Usage: "See docs for supported endpoints, eg: https://s3.amazonaws.com/somebucket/my_install.yml",
 			},
+			&cli.StringFlag{
+				Name:    "property-file",
+				Aliases: []string{"p"},
+				Value:   "",
+				Usage:   "Loads properties from a file, eg: /etc/cfs/properties.yml to be used as environment variables for operators and templates",
+			},
 		},
 		Action: func(cCtx *cli.Context) error {
 			if cCtx.Args().First() != "" {
@@ -49,7 +55,7 @@ func main() {
 					log.Error().Err(err).Msg("cannot continue without configuration data")
 					os.Exit(1)
 				}
-				handlers.Install(t)
+				handlers.Install(t, cCtx.String("property-file"))
 				return nil
 			}
 			t, err := config.LoadConfig(cCtx.String("config"))
@@ -57,7 +63,7 @@ func main() {
 				log.Error().Err(err).Msg("cannot continue without configuration data")
 				os.Exit(1)
 			}
-			handlers.Install(t)
+			handlers.Install(t, cCtx.String("property-file"))
 			return nil
 		},
 		Commands: []*cli.Command{
@@ -71,7 +77,7 @@ func main() {
 						log.Error().Err(err).Msg("cannot continue without configuration data")
 						os.Exit(1)
 					}
-					handlers.Install(t)
+					handlers.Install(t, cCtx.String("property-file"))
 					return nil
 				},
 			},

@@ -27,3 +27,5 @@ go.work
 terraform.tfstate
 terraform.tfstate.*
 .terraform/
+output.txt
+output2.txt
