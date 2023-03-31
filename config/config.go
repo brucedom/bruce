@@ -11,7 +11,8 @@ import (
 
 // TemplateData will be marshalled from the provided config file that exists.
 type TemplateData struct {
-	Steps     []Steps `yaml:"steps"`
+	Steps     []Steps           `yaml:"steps"`
+	Variables map[string]string `yaml:"variables"`
 	BackupDir string
 }
 

@@ -1,3 +1,6 @@
+---
+variables:
+  Person: "Steven"
 steps:
 - cmd: echo "Hello World ${Person}" > output.txt
 - cmd: echo "Steven"

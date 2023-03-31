@@ -10,6 +10,12 @@ import (
 
 func Install(t *config.TemplateData, propfile string) error {
 	log.Debug().Msg("starting install task")
+	if len(t.Variables) > 0 {
+		for k, v := range t.Variables {
+			log.Debug().Msgf("setting env var: %s=%s", k, v)
+			os.Setenv(k, v)
+		}
+	}
 	log.Debug().Msgf("propfile: %s", propfile)
 	err := loadPropData(propfile)
 	if err != nil {

@@ -1,2 +1,2 @@
 There be a person named: {{.Person}} here.
-{{.|dump}}
+{{.Person|dump}}
