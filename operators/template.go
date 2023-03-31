@@ -39,6 +39,12 @@ type Template struct {
 	Group     string      `yaml:"group"`
 	Variables []TVars     `yaml:"vars"`
 }
+
+func (t *Template) Setup() {
+	t.Template = RenderEnvString(t.Template)
+	t.RemoteLoc = RenderEnvString(t.RemoteLoc)
+}
+
 type TVars struct {
 	ObType   string `yaml:"type"`
 	Input    string `yaml:"input"`
@@ -52,6 +58,7 @@ func dump(field interface{}) string {
 }
 
 func (t *Template) Execute() error {
+	t.Setup()
 	log.Debug().Msgf("using template backup directory as: %s", backupDir)
 	// backup existing template if exists
 	if exe.FileExists(t.Template) {

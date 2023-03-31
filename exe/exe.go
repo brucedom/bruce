@@ -175,24 +175,23 @@ func SetOwnership(obType, opath, owner, group string, recursive bool) error {
 	return nil
 }
 
-func Run(c string, useSudo bool) *Execution {
+func Run(c, dir string) *Execution {
 	e := &Execution{}
 	e.input = c
 	e.fields = strings.Fields(c)
-	if useSudo {
-		e.useSudo = true
-		e.cmnd = "sudo"
-		e.args = e.fields
+
+	if (len(e.fields)) < 2 {
+		e.cmnd = e.fields[0]
+		e.args = []string{}
 	} else {
-		if (len(e.fields)) < 2 {
-			e.cmnd = e.fields[0]
-			e.args = []string{}
-		} else {
-			e.cmnd = e.fields[0]
-			e.args = e.fields[1:]
-		}
+		e.cmnd = e.fields[0]
+		e.args = e.fields[1:]
 	}
+
 	cmd := exec.Command(e.cmnd, e.args...)
+	if dir != "" {
+		cmd.Dir = dir
+	}
 	d, err := cmd.CombinedOutput()
 	if err != nil {
 		e.isError = true

@@ -10,7 +10,7 @@ import (
 )
 
 func updateYum() bool {
-	return !exe.Run("/usr/bin/yum update -y", false).Failed()
+	return !exe.Run("/usr/bin/yum update -y", "").Failed()
 }
 
 func installYumPackage(pkg []string, isInstall bool) bool {
@@ -20,7 +20,7 @@ func installYumPackage(pkg []string, isInstall bool) bool {
 	}
 	installCmd := fmt.Sprintf("/usr/bin/yum %s -y %s", action, strings.Join(pkg, " "))
 	log.Debug().Msgf("/usr/bin/yum install starting with: %s", installCmd)
-	install := exe.Run(installCmd, false)
+	install := exe.Run(installCmd, "")
 	if install.Failed() {
 		if len(install.Get()) > 0 {
 			strSplit := strings.Split(install.Get(), "\n")
@@ -36,7 +36,7 @@ func installYumPackage(pkg []string, isInstall bool) bool {
 
 func installYumRepository(name, location, key string) error {
 	if strings.HasSuffix(location, ".rpm") {
-		err := exe.Run(fmt.Sprintf("yum install -y %s", location), false).GetErr()
+		err := exe.Run(fmt.Sprintf("yum install -y %s", location), "").GetErr()
 		if err != nil {
 			return err
 		}

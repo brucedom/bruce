@@ -23,13 +23,13 @@ func InstallOSPackage(pkgs []string, packageHandler string, isInstall bool) bool
 	return false
 }
 
-func InstallRepository(rType, name, loc, key string) error {
+func InstallRepository(rType, name, loc, key string, isRepoFile bool) error {
 	var err error
 	switch rType {
 	case "dnf":
 		err = installDnfRepository(name, loc, key)
 	case "apt":
-		err = installAptRepository(name, loc, key)
+		err = installAptRepository(name, loc, key, isRepoFile)
 	case "yum":
 		err = installYumRepository(name, loc, key)
 	default:

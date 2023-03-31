@@ -38,6 +38,8 @@ type SystemInfo struct {
 
 func InitializeSysInfo() error {
 	s := Get()
+	// defaults
+	s.OSArch = runtime.GOARCH
 	if runtime.GOOS == "linux" {
 		s.OSType = "linux"
 		u, err := user.Current()
@@ -59,6 +61,9 @@ func InitializeSysInfo() error {
 		hasOsData := ReadLinuxOsData(s)
 		if !hasOsData {
 			log.Error().Msgf("could not read os data must gather it another way?")
+		}
+		if s.OSArch == "amd64" {
+			s.OSArch = "x86_64"
 		}
 	}
 	s.Save()
@@ -95,7 +100,7 @@ func ReadLinuxOsData(s *SystemInfo) bool {
 
 		readFile.Close()
 	}
-	s.OSArch = s.wash(exe.Run("uname -m", false).Get())
+	s.OSArch = s.wash(exe.Run("uname -m", "").Get())
 	return false
 }
 

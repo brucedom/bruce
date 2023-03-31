@@ -4,6 +4,9 @@ import (
 	"cfs/system"
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -50,4 +53,32 @@ func GetValueForOSHandler(value string) string {
 	}
 	log.Debug().Msgf("returning original value: %s", value)
 	return value
+}
+
+func RenderEnvString(s string) string {
+	log.Debug().Msgf("rendering env string: %s", s)
+	envVars := make(map[string]string)
+	for _, e := range os.Environ() {
+		pair := strings.SplitN(e, "=", 2)
+		envVars[pair[0]] = pair[1]
+	}
+
+	var envVarRegex *regexp.Regexp
+	if system.Get().OSType == "windows" {
+		envVarRegex = regexp.MustCompile(`%([^%]+)%`)
+	} else {
+		envVarRegex = regexp.MustCompile(`(?:\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}|~)`)
+	}
+
+	return envVarRegex.ReplaceAllStringFunc(s, func(match string) string {
+		if strings.HasPrefix(match, "~") {
+			homeDir, err := os.UserHomeDir()
+			if err != nil {
+				return match
+			}
+			return filepath.Join(homeDir, match[1:])
+		}
+		varName := envVarRegex.ReplaceAllString(match, "$1")
+		return envVars[varName]
+	})
 }

@@ -10,9 +10,9 @@ func StartOSServiceReloads() []string {
 		// We only support sytemd / systemctrl for right now...
 		for _, svc := range cfg.Template.Reloadables {
 			if strings.ToLower(svc.RType) == "systemd" {
-				out := exe.Run(fmt.Sprintf("systemctl restart %s", svc.Name), cfg.TrySudo).Get()
+				out := exe.Run(fmt.Sprintf("systemctl restart %s", svc.Name)).Get()
 				log.Info().Str("output", out).Msgf("issued restart (update event) to service: %s", svc.Name)
-				status := exe.Run(fmt.Sprintf("systemctl is-active %s", svc.Name), cfg.TrySudo).Get()
+				status := exe.Run(fmt.Sprintf("systemctl is-active %s", svc.Name)).Get()
 				if strings.Contains(strings.ToLower(status), "could not be found") {
 					log.Error().Err(fmt.Errorf("%s service not found", svc.Name)).Msg("service does not exist cannot manage state")
 					continue

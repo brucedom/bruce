@@ -13,7 +13,16 @@ type Packages struct {
 	OsLimits    string   `yaml:"osLimits"`
 }
 
+func (p *Packages) Setup() {
+	newList := make([]string, 0)
+	for _, pkg := range p.PackageList {
+		newList = append(newList, RenderEnvString(pkg))
+	}
+	p.PackageList = newList
+}
+
 func (p *Packages) Execute() error {
+	p.Setup()
 	if system.Get().CanExecOnOs(p.OsLimits) {
 		log.Info().Msgf("starting package installs for %s", system.Get().PackageHandler)
 		isInstall := true

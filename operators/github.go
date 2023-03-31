@@ -101,8 +101,13 @@ type Github struct {
 	GHClient   *rest.RESTClient
 }
 
-func (g *Github) Execute() error {
+func (g *Github) Setup() {
+	g.Repo = RenderEnvString(g.Repo)
+	g.Storage = RenderEnvString(g.Storage)
+}
 
+func (g *Github) Execute() error {
+	g.Setup()
 	preStrip := strings.TrimLeft(g.Repo, "https://")
 	strip := strings.TrimRight(preStrip, ".git")
 	parts := strings.Split(strip, "/")

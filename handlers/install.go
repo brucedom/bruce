@@ -9,9 +9,8 @@ import (
 )
 
 func Install(t *config.TemplateData, propfile string) error {
-
 	log.Debug().Msg("starting install task")
-	log.Info().Msgf("propfile: %s", propfile)
+	log.Debug().Msgf("propfile: %s", propfile)
 	err := loadPropData(propfile)
 	if err != nil {
 		log.Error().Err(err).Msg("cannot proceed without the properties file specified.")

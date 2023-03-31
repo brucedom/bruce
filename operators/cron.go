@@ -16,7 +16,13 @@ type Cron struct {
 	Exec     string `yaml:"cmd"`
 }
 
+func (c *Cron) Setup() {
+	c.Exec = RenderEnvString(c.Exec)
+	c.User = RenderEnvString(c.User)
+}
+
 func (c *Cron) Execute() error {
+	c.Setup()
 	if runtime.GOOS == "linux" {
 		jobName := mutation.StripNonAlnum(c.Name)
 		c.Schedule = mutation.StripExtraWhitespaceFB(c.Schedule)

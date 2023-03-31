@@ -18,10 +18,6 @@ var (
 func setLogger() {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-	if version == "source" {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-		return
-	}
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 
@@ -47,8 +43,17 @@ func main() {
 				Value:   "",
 				Usage:   "Loads properties from a file, eg: /etc/cfs/properties.yml to be used as environment variables for operators and templates",
 			},
+			&cli.BoolFlag{
+				Name:    "debug",
+				Aliases: []string{"d"},
+				Value:   false,
+				Usage:   "Enable debug logging",
+			},
 		},
 		Action: func(cCtx *cli.Context) error {
+			if cCtx.Bool("debug") {
+				zerolog.SetGlobalLevel(zerolog.DebugLevel)
+			}
 			if cCtx.Args().First() != "" {
 				t, err := config.LoadConfig(cCtx.Args().First())
 				if err != nil {
@@ -72,6 +77,9 @@ func main() {
 				Aliases: []string{"setup"},
 				Usage:   "this is the default action and will be run if no commands are specified",
 				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
 					t, err := config.LoadConfig(cCtx.String("config"))
 					if err != nil {
 						log.Error().Err(err).Msg("cannot continue without configuration data")
@@ -86,6 +94,9 @@ func main() {
 				Aliases: []string{"find"},
 				Usage:   "this will search the ConfigSet repository for a related manifest",
 				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
 					handlers.Search(cCtx.Args().First())
 					return nil
 				},
@@ -95,6 +106,9 @@ func main() {
 				Aliases: []string{"open"},
 				Usage:   "this command opens the manifest for you to view in CLI prior to executing install",
 				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
 					handlers.View(cCtx.Args().First())
 					return nil
 				},

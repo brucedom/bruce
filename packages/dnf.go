@@ -8,7 +8,7 @@ import (
 )
 
 func updateDnf() bool {
-	return !exe.Run("/usr/bin/dnf update -y", false).Failed()
+	return !exe.Run("/usr/bin/dnf update -y", "").Failed()
 }
 
 func installDnfPackage(pkg []string, isInstall bool) bool {
@@ -18,7 +18,7 @@ func installDnfPackage(pkg []string, isInstall bool) bool {
 	}
 	installCmd := fmt.Sprintf("/usr/bin/dnf %s -y %s", action, strings.Join(pkg, " "))
 	log.Debug().Msgf("/usr/bin/dnf install starting with: %s", installCmd)
-	install := exe.Run(installCmd, false)
+	install := exe.Run(installCmd, "")
 	if install.Failed() {
 		if len(install.Get()) > 0 {
 			strSplit := strings.Split(install.Get(), "\n")
@@ -35,7 +35,7 @@ func installDnfPackage(pkg []string, isInstall bool) bool {
 func installDnfRepository(name, location, key string) error {
 	installCmd := fmt.Sprintf("/usr/bin/dnf config-manager --add-repo %s", location)
 	log.Debug().Msgf("/usr/bin/dnf configuring repo %s", name)
-	install := exe.Run(installCmd, false)
+	install := exe.Run(installCmd, "")
 	if install.Failed() {
 		if len(install.Get()) > 0 {
 			strSplit := strings.Split(install.Get(), "\n")

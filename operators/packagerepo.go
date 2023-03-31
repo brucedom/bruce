@@ -8,21 +8,28 @@ import (
 )
 
 type PackageRepo struct {
-	Name     string `yaml:"repoName"`
-	Location string `yaml:"repoLocation"`
-	RType    string `yaml:"repoType"`
-	Key      string `yaml:"repoKey"`
-	OsLimits string `yaml:"osLimits"`
+	Name       string `yaml:"repoName"`
+	Location   string `yaml:"repoLocation"`
+	RType      string `yaml:"repoType"`
+	Key        string `yaml:"repoKey"`
+	IsRepoFile bool   `yaml:"isRepoFile"`
+	OsLimits   string `yaml:"osLimits"`
+}
+
+func (p *PackageRepo) Setup() {
+	p.Location = RenderEnvString(p.Location)
+	p.Key = RenderEnvString(p.Key)
 }
 
 func (p *PackageRepo) Execute() error {
+	p.Setup()
 	if system.Get().CanExecOnOs(p.OsLimits) {
-		log.Info().Msgf("starting package repo configuration for %s", p.RType)
+		log.Debug().Msgf("starting package repo configuration for %s", p.RType)
 		err := p.InstallPreReq()
 		if err != nil {
 			return err
 		}
-		return packages.InstallRepository(p.RType, p.Name, p.Location, p.Key)
+		return packages.InstallRepository(p.RType, p.Name, p.Location, p.Key, p.IsRepoFile)
 	} else {
 		si := system.Get()
 		log.Debug().Msgf("System (%s|%s) limited execution of installs for: %s", si.OSID, si.OSVersionID, p.OsLimits)
@@ -39,6 +46,9 @@ func (p *PackageRepo) InstallPreReq() error {
 		preReq = ""
 	}
 
+	if preReq == "" {
+		return nil
+	}
 	success := packages.InstallOSPackage([]string{preReq}, p.RType, true)
 	if !success {
 		err := fmt.Errorf("cannot install pre-requisite package: %s", preReq)

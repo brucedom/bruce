@@ -3,6 +3,7 @@ package config
 import (
 	"cfs/loader"
 	"cfs/operators"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -81,6 +82,14 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		e.Action = svc
 		return nil
 	}
+
+	gt := &operators.Git{}
+	if err := nd.Decode(gt); err == nil && len(gt.Repo) > 0 {
+		log.Debug().Msg("matching git operator")
+		e.Action = gt
+		return nil
+	}
+	log.Debug().Msg("no matching operator found, using null operator")
 	e.Action = &operators.NullOperator{}
 	return nil
 }
@@ -95,6 +104,10 @@ func LoadConfig(fileName string) (*TemplateData, error) {
 	log.Debug().Bytes("rawConfig", d)
 	c := &TemplateData{}
 
+	if os.Getenv("CFS_DEBUG") == "true" {
+		log.Debug().Msg("debug mode enabled")
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
 	err = yaml.Unmarshal(d, c)
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not parse config file")
