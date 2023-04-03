@@ -90,6 +90,14 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		e.Action = gt
 		return nil
 	}
+
+	rc := &operators.RecursiveCopy{}
+	if err := nd.Decode(rc); err == nil && len(rc.Src) > 0 {
+		log.Debug().Msg("matching recursive copy operator")
+		e.Action = rc
+		return nil
+	}
+
 	log.Debug().Msg("no matching operator found, using null operator")
 	e.Action = &operators.NullOperator{}
 	return nil
