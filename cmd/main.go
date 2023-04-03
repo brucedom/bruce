@@ -97,7 +97,7 @@ func main() {
 					if cCtx.Bool("debug") {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)
 					}
-					handlers.Search(cCtx.Args().First())
+					handlers.Search(cCtx.Args().First(), cCtx.Args().Get(1))
 					return nil
 				},
 			},

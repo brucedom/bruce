@@ -27,15 +27,29 @@ type Manifest struct {
 	UpdatedOn   time.Time `json:"updated_on"`
 }
 
-func Search(q string) error {
-	manifestUrl := "https://configset.com/api/manifests"
+func Search(query, q2 string) error {
+	searchMode := "manifests"
+	q := query
+	if q2 != "" {
+		q = q2
+		if query == "manifests" || query == "manifest" || query == "m" {
+			searchMode = "manifests"
+		} else if query == "templates" || query == "template" || query == "t" {
+			searchMode = "templates"
+		} else {
+			fmt.Printf("Invalid object search: \"%s\" Choose one of (manifests/manifest/m) or (templates/template/t)\n", query)
+			return fmt.Errorf("invalid search mode: %s only (manifests/manifest/m) or (templates/template/t) is supported", q)
+		}
+	}
 
-	req, err := http.NewRequest("GET", manifestUrl+"?search="+q, nil)
+	searchUrl := "https://configset.com/api/" + searchMode
+
+	req, err := http.NewRequest("GET", searchUrl+"?search="+q, nil)
 	if err != nil {
 		fmt.Println("Something went wrong: " + err.Error())
 		return err
 	}
-	fmt.Printf("Searching for: %s\n", q)
+	fmt.Printf("Searching for (%s): %s\n", searchMode, q)
 	fmt.Println("=====================================")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
@@ -64,7 +78,7 @@ func Search(q string) error {
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Printf("Error: status code %d\n", resp.StatusCode)
-		return fmt.Errorf("Error: status code %d", resp.StatusCode)
+		return fmt.Errorf("error: status code %d", resp.StatusCode)
 	}
 
 	var sr SearchResponse
@@ -74,8 +88,8 @@ func Search(q string) error {
 		return err
 	}
 
-	for _, manifest := range sr.Result {
-		fmt.Printf("Name: %s\n  Description: %s\n  URL: %s\n", manifest.Name, manifest.Description, fmt.Sprintf("%s/%s/data", manifestUrl, manifest.Id))
+	for _, searchItem := range sr.Result {
+		fmt.Printf("Name: %s\n  Description: %s\n  URL: %s\n", searchItem.Name, searchItem.Description, fmt.Sprintf("%s/%s/data", searchUrl, searchItem.Id))
 	}
 
 	return nil
