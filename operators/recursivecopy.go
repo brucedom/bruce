@@ -7,11 +7,12 @@ import (
 )
 
 type RecursiveCopy struct {
-	Src      string   `yaml:"copyRecursive"`
-	Dest     string   `yaml:"dest"`
-	Ignores  []string `yaml:"ignoreFiles"`
-	FlatCopy bool     `yaml:"flatCopy"`
-	MaxDepth int      `yaml:"maxDepth"`
+	Src           string   `yaml:"copyRecursive"`
+	Dest          string   `yaml:"dest"`
+	Ignores       []string `yaml:"ignoreFiles"`
+	FlatCopy      bool     `yaml:"flatCopy"`
+	MaxDepth      int      `yaml:"maxDepth"`
+	MaxConcurrent int      `yaml:"maxConcurrent"`
 }
 
 func (c *RecursiveCopy) Setup() {
@@ -23,13 +24,16 @@ func (c *RecursiveCopy) Setup() {
 			log.Error().Err(err).Msg("failed to create parent directory for recursive copy")
 		}
 	}
-
+	if c.MaxConcurrent == 0 {
+		c.MaxConcurrent = 5
+	}
 }
 
 func (c *RecursiveCopy) Execute() error {
 	c.Setup()
-	log.Info().Msgf("recursive copying %s to %s", c.Src, c.Dest)
-	err := loader.RecursiveCopy(c.Src, c.Dest, c.Dest, true, c.Ignores, c.FlatCopy, c.MaxDepth)
+	log.Info().Msgf("recursive copying (%d files at a time) with a maxDepth of: %d", c.MaxConcurrent, c.MaxDepth)
+	log.Info().Msgf("%s => %s", c.Src, c.Dest)
+	err := loader.RecursiveCopy(c.Src, c.Dest, c.Dest, true, c.Ignores, c.FlatCopy, c.MaxDepth, c.MaxConcurrent)
 	if err != nil {
 		log.Error().Err(err).Msg("could not copy file")
 		return err
