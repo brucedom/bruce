@@ -65,17 +65,14 @@ func RecursiveCopy(src string, baseDir, dest string, overwrite bool, ignores []s
 		// This is a remote http copy
 		return recursiveHttpCopy(src, baseDir, dest, overwrite, ignores, isFlatCopy, maxDepth, maxConcurrent)
 	}
+	if src[0:5] == "s3://" {
+		// This is a remote s3 copy
+		return recursiveS3Copy(src, baseDir, dest, overwrite, ignores, isFlatCopy, maxDepth, maxConcurrent)
+	}
 	return recursiveNotSupported(src, baseDir, dest, overwrite, ignores, isFlatCopy, maxDepth)
 }
 
 func recursiveNotSupported(_ string, _, _ string, _ bool, _ []string, _ bool, _ int) error {
 	log.Error().Msg("recursive copy not supported for this source")
 	return fmt.Errorf("recursive copy not supported for this source")
-}
-
-func isFlatCopyDest(filename, baseDir, dest string, isFlatCopy bool) string {
-	if isFlatCopy {
-		return path.Join(baseDir, path.Base(filename))
-	}
-	return path.Join(dest, filename)
 }
