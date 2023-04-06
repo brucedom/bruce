@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -127,7 +128,10 @@ func (g *Github) Execute() error {
 		log.Error().Err(err).Msg("could not read remote github file")
 		return err
 	}
-	localFile := path.Join(g.Storage, fn)
+	// Sanitize the filename
+	sanitizedFn := filepath.Base(fn)
+
+	localFile := path.Join(g.Storage, sanitizedFn)
 	log.Info().Msgf("wrote %s from github release", localFile)
 	return os.WriteFile(localFile, rf, 0664)
 }
