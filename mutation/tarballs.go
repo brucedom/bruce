@@ -24,6 +24,14 @@ func useGzipReader(filename string, fileReader io.ReadCloser) io.ReadCloser {
 	return fileReader
 }
 
+func sanitizePath(path string) (string, error) {
+	cleanPath := filepath.Clean(path)
+	if strings.HasPrefix(cleanPath, ".."+string(os.PathSeparator)) || strings.HasPrefix(cleanPath, "..") {
+		return "", fmt.Errorf("path traversal attempt: %s", path)
+	}
+	return cleanPath, nil
+}
+
 func ExtractTarball(src, dst string, force, stripRoot bool) error {
 	// We just check dest currently as we will read from multiple source locations and they may fail by time we cleaned up so worthless to check upfront.
 	if _, err := os.Stat(dst); err == nil {
@@ -50,7 +58,13 @@ func ExtractTarball(src, dst string, force, stripRoot bool) error {
 			continue
 		}
 
-		target := filepath.Join(dst, header.Name)
+		// the target location where the dir/file should be created
+		sanitizedPath, err := sanitizePath(header.Name)
+		if err != nil {
+			log.Error().Err(err).Msg("path traversal attempt detected, skipping entry")
+			continue
+		}
+		target := filepath.Join(dst, sanitizedPath)
 		if stripRoot {
 			firstDir := strings.Split(header.Name, string(os.PathSeparator))[0]
 			target = filepath.Join(dst, strings.TrimLeft(header.Name, firstDir+string(os.PathSeparator)))
