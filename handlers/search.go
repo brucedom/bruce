@@ -89,7 +89,7 @@ func Search(query, q2 string) error {
 	}
 
 	for _, searchItem := range sr.Result {
-		fmt.Printf("Name: %s\n  Description: %s\n  URL: %s\n", searchItem.Name, searchItem.Description, fmt.Sprintf("%s/%s/data", searchUrl, searchItem.Id))
+		fmt.Printf("Name: %s\n  Description: %s\n  ID:%s\n  URL: %s\n", searchItem.Name, searchItem.Description, searchItem.Id, fmt.Sprintf("%s/%s/data", searchUrl, searchItem.Id))
 	}
 
 	return nil
