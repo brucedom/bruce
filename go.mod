@@ -3,7 +3,7 @@ module cfs
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go v1.44.245
+	github.com/aws/aws-sdk-go v1.44.249
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-git/go-git/v5 v5.6.1
 	github.com/rs/zerolog v1.29.1
