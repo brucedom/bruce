@@ -169,6 +169,28 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:  "upgrade",
+				Usage: "this command will upgrade the cfs application to the latest version",
+				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
+					handlers.Upgrade(version)
+					return nil
+				},
+			},
+			{
+				Name:  "version",
+				Usage: "this prints the current version of cfs and the current latest version of cfs",
+				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
+					handlers.Version(version)
+					return nil
+				},
+			},
 		},
 	}
 	log.Debug().Msgf("Starting Bruce (Version: %s)", version)

@@ -1,7 +1,9 @@
 ---
-version: v0.9
+APP_VERSION: v0.9
 steps:
   - cmd: mkdir -p .build
     osLimits: ubuntu
-  - cmd: go build -ldflags "-s -w -X main.version=v0.91" -o .build/cfs cmd/main.go
+  - cmd: go build -ldflags "-s -w -X main.version=${APP_VERSION}" -o .build/cfs cmd/main.go
+    osLimits: ubuntu
+  - cmd: sudo cp -f .build/cfs /usr/local/bin/cfs
     osLimits: ubuntu

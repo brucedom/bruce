@@ -40,6 +40,11 @@ func ExtractTarball(src, dst string, force, stripRoot bool) error {
 			return nil
 		}
 	}
+	err := os.MkdirAll(dst, 0755)
+	if err != nil {
+		log.Error().Err(err).Msgf("cannot create directory at dst: %s", dst)
+		return err
+	}
 	rr, _, err := loader.GetRemoteReader(src)
 	if err != nil {
 		log.Error().Err(err).Msgf("cannot read tarball at src: %s", src)
@@ -65,16 +70,23 @@ func ExtractTarball(src, dst string, force, stripRoot bool) error {
 			continue
 		}
 		target := filepath.Join(dst, sanitizedPath)
+		isTopLevel := false
 		if stripRoot {
-			firstDir := strings.Split(header.Name, string(os.PathSeparator))[0]
-			target = filepath.Join(dst, strings.TrimLeft(header.Name, firstDir+string(os.PathSeparator)))
+			elements := strings.Split(sanitizedPath, string(os.PathSeparator))
+			if len(elements) > 1 {
+				target = filepath.Join(dst, filepath.Join(elements[1:]...))
+			} else {
+				isTopLevel = true
+			}
 		}
-		fmt.Printf("new target: %s\n", target)
+		fmt.Printf("extracting: %s\n", target)
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if _, err := os.Stat(target); err != nil {
-				if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
-					return err
+			if !isTopLevel {
+				if _, err := os.Stat(target); err != nil {
+					if err := os.MkdirAll(target, os.FileMode(header.Mode)); err != nil {
+						return err
+					}
 				}
 			}
 		// create file with existing file mode
@@ -87,7 +99,10 @@ func ExtractTarball(src, dst string, force, stripRoot bool) error {
 			if _, err := io.Copy(f, tr); err != nil {
 				return err
 			}
-			f.Close()
+			err = f.Close()
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
