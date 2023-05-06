@@ -16,7 +16,7 @@ func useGzipReader(filename string, fileReader io.ReadCloser) io.ReadCloser {
 	if strings.HasSuffix(filename, ".tgz") || strings.HasSuffix(filename, ".tar.gz") {
 		gzr, err := gzip.NewReader(fileReader)
 		if err != nil {
-			log.Error().Err(err).Msg("could not instantiate gzip reader returning original")
+			log.Error().Err(err).Msg("the file is not a gzip file, cannot proceed.")
 			return fileReader
 		}
 		return gzr
@@ -25,10 +25,10 @@ func useGzipReader(filename string, fileReader io.ReadCloser) io.ReadCloser {
 }
 
 func sanitizePath(path string) (string, error) {
-	cleanPath := filepath.Clean(path)
-	if strings.HasPrefix(cleanPath, ".."+string(os.PathSeparator)) || strings.HasPrefix(cleanPath, "..") {
+	if filepath.IsAbs(path) {
 		return "", fmt.Errorf("path traversal attempt: %s", path)
 	}
+	cleanPath := filepath.Clean(path)
 	return cleanPath, nil
 }
 
