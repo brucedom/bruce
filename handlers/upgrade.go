@@ -20,6 +20,8 @@ type RepositoryTag struct {
 }
 
 func Upgrade(currentVersion string) error {
+	// this gets stripped by goreleaser
+	currentVersion = "v" + currentVersion
 	// then we need to get the latest version
 	fmt.Println("Checking for updates... (current version is " + currentVersion + ")")
 	fmt.Println("System information: " + runtime.GOOS + "/" + runtime.GOARCH)
