@@ -133,7 +133,7 @@ func main() {
 						Name:    "description",
 						Aliases: []string{"d"},
 						Value:   "",
-						Usage:   "a brief description for the file to be uplaoded, can be edited with more detail later.",
+						Usage:   "a brief description for the file to be uploaded, can be edited with more detail later.",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
