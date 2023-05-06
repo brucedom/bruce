@@ -2,7 +2,7 @@ project_name: cfs
 builds:
   - main: ./cmd/
     ldflags:
-      - -s -w -X main.version=$GITHUB_REF_NAME
+      - -s -w -X main.version={{.Version}}
     env: [CGO_ENABLED=0]
     goos:
       - linux
