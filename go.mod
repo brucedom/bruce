@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.254
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-git/go-git/v5 v5.6.1
+	github.com/minio/selfupdate v0.6.0
 	github.com/rs/zerolog v1.29.1
 	github.com/urfave/cli/v2 v2.25.3
 	gopkg.in/yaml.v3 v3.0.1
@@ -27,7 +28,6 @@ require (
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/minio/selfupdate v0.6.0 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
