@@ -32,10 +32,8 @@ func Upgrade(currentVersion string) error {
 		return nil
 	}
 	fmt.Println("There is a new version available: " + latestTag)
-	fmt.Println("Without the version prefix: " + latestTag[1:])
 
-	//url := fmt.Sprintf("https://github.com/configset/cfs/releases/download/%s/cfs_%s_%s_%s.tar.gz", latestTag, latestTag[1:], runtime.GOOS, runtime.GOARCH)
-	url := "/tmp/test.tar.gz"
+	url := fmt.Sprintf("https://github.com/configset/cfs/releases/download/%s/cfs_%s_%s_%s.tar.gz", latestTag, latestTag[1:], runtime.GOOS, runtime.GOARCH)
 	updateDir := path.Join(os.TempDir(), "cfs-update", fmt.Sprintf("%c", os.PathSeparator))
 	fName := "cfs"
 	if runtime.GOOS == "windows" {
