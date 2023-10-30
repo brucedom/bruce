@@ -7,4 +7,4 @@ steps:
   setEnv: Person
 - cmd: echo "Hello World ${Person}" >> output.txt
 - template: ./output2.txt
-  remoteLocation: ./template-example.txt
+  source: ./template-example.txt

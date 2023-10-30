@@ -33,7 +33,7 @@ func init() {
 
 type Template struct {
 	Template  string      `yaml:"template"`
-	RemoteLoc string      `yaml:"remoteLocation"`
+	RemoteLoc string      `yaml:"source"`
 	Perms     os.FileMode `yaml:"perms"`
 	Owner     string      `yaml:"owner"`
 	Group     string      `yaml:"group"`

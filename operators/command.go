@@ -33,7 +33,7 @@ func (c *Command) Execute() error {
 		if len(logStr) > 25 {
 			logStr = logStr[0:25] + "..."
 		}
-		log.Info().Msgf("executing command: %s", logStr)
+		log.Info().Msgf("cmd: %s", logStr)
 		fileName := exe.EchoToFile(c.EnvCmd, os.TempDir())
 		// change directory to the working directory if specified
 		err := os.Chmod(fileName, 0775)
