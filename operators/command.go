@@ -29,11 +29,7 @@ func (c *Command) Execute() error {
 		if len(c.EnvCmd) < 1 {
 			return fmt.Errorf("no command to execute")
 		}
-		logStr := c.EnvCmd
-		if len(logStr) > 25 {
-			logStr = logStr[0:25] + "..."
-		}
-		log.Info().Msgf("cmd: %s", logStr)
+		log.Info().Msgf("cmd: %s", c.EnvCmd)
 		fileName := exe.EchoToFile(c.EnvCmd, os.TempDir())
 		// change directory to the working directory if specified
 		err := os.Chmod(fileName, 0775)

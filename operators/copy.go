@@ -20,6 +20,7 @@ func (c *Copy) Setup() {
 func (c *Copy) Execute() error {
 	c.Setup()
 	err := loader.CopyFile(c.Src, c.Dest, c.Perm, true)
+	log.Info().Msgf("copy: %s => %s", c.Src, c.Dest)
 	if err != nil {
 		log.Error().Err(err).Msg("could not copy file")
 		return err

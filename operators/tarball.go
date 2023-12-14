@@ -3,6 +3,7 @@ package operators
 import (
 	"cfs/mutation"
 	"fmt"
+	"github.com/rs/zerolog/log"
 )
 
 type Tarball struct {
@@ -23,5 +24,6 @@ func (t *Tarball) Execute() error {
 	if len(t.Src) < 1 {
 		return fmt.Errorf("source is too short")
 	}
+	log.Info().Msgf("tarball: %s => %s", t.Src, t.Dest)
 	return mutation.ExtractTarball(t.Src, t.Dest, t.Force, t.Strip)
 }

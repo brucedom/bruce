@@ -15,6 +15,10 @@ type PageLink struct {
 }
 
 func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
+	// if filemode is 0, set it to 0644
+	if perm == 0 {
+		perm = 0644
+	}
 	source, _, err := GetRemoteReader(src)
 	if err != nil {
 		log.Error().Err(err).Msg("cannot open source file")

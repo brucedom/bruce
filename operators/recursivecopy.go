@@ -31,8 +31,8 @@ func (c *RecursiveCopy) Setup() {
 
 func (c *RecursiveCopy) Execute() error {
 	c.Setup()
-	log.Info().Msgf("recursive copying (%d files at a time) with a maxDepth of: %d", c.MaxConcurrent, c.MaxDepth)
-	log.Info().Msgf("%s => %s", c.Src, c.Dest)
+	log.Info().Msgf("rcopy (%d files at a time) with a maxDepth of: %d", c.MaxConcurrent, c.MaxDepth)
+	log.Info().Msgf("  %s => %s", c.Src, c.Dest)
 	err := loader.RecursiveCopy(c.Src, c.Dest, c.Dest, true, c.Ignores, c.FlatCopy, c.MaxDepth, c.MaxConcurrent)
 	if err != nil {
 		log.Error().Err(err).Msg("could not copy file")

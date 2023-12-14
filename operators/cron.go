@@ -25,6 +25,7 @@ func (c *Cron) Execute() error {
 	c.Setup()
 	if runtime.GOOS == "linux" {
 		jobName := mutation.StripNonAlnum(c.Name)
+		log.Info().Msgf("cron: /etc/cron.d/%s", jobName)
 		c.Schedule = mutation.StripExtraWhitespaceFB(c.Schedule)
 		c.User = mutation.StripNonAlnum(c.User)
 		log.Debug().Msgf("starting cronjob: %s", jobName)

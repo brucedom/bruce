@@ -71,6 +71,7 @@ func (t *Template) Execute() error {
 	} else {
 		log.Debug().Str("template", t.Template).Msg("no existing template file exists")
 	}
+	log.Info().Msgf("template: %s => %s", t.RemoteLoc, t.Template)
 	return ExecuteTemplate(t.Template, t.RemoteLoc, t.Variables, t.Perms)
 	// run template exec on file
 }
