@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"github.com/rs/zerolog/log"
 	"io"
 	"strings"
 )
@@ -10,7 +11,7 @@ func ReadRemoteFile(remoteLoc string) ([]byte, string, error) {
 	if err != nil {
 		return nil, fn, err
 	}
-	defer r.Close()
+	defer log.Err(r.Close())
 	d, err := io.ReadAll(r)
 	return d, fn, err
 }

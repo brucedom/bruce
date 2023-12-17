@@ -24,11 +24,11 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 		log.Error().Err(err).Msg("cannot open source file")
 		return err
 	}
-	defer source.Close()
+	defer log.Err(source.Close())
 
 	if exe.FileExists(dest) {
 		if overwrite {
-			exe.DeleteFile(dest)
+			log.Err(exe.DeleteFile(dest))
 		} else {
 			log.Error().Msgf("file %s already exists", dest)
 			return fmt.Errorf("file %s already exists", dest)
@@ -36,7 +36,7 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 	} else {
 		// check if the directories exist to render the file
 		if !exe.FileExists(path.Dir(dest)) {
-			os.MkdirAll(path.Dir(dest), perm)
+			log.Err(os.MkdirAll(path.Dir(dest), perm))
 		}
 	}
 
@@ -45,7 +45,7 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 		log.Error().Err(err).Msgf("could not open file for writing copy: %s", dest)
 		return err
 	}
-	defer destination.Close()
+	defer log.Err(destination.Close())
 	printSrc := src
 	if len(src) > 32 {
 		printSrc = "..." + src[len(src)-32:]

@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"github.com/rs/zerolog/log"
 	"os"
 	"testing"
 )
@@ -17,7 +18,7 @@ func TestGetRemoteReader(t *testing.T) {
 	if rc == nil {
 		t.Error("Expected non-nil ReadCloser, got nil")
 	}
-	rc.Close()
+	log.Err(rc.Close())
 
 	// Test S3
 	/*
@@ -37,7 +38,7 @@ func TestGetRemoteReader(t *testing.T) {
 	if err != nil {
 		// Handle error
 	}
-	defer os.Remove("file.txt")
+	defer log.Err(os.Remove("file.txt"))
 
 	_, err = file.WriteString("helloworld")
 	if err != nil {
@@ -55,9 +56,9 @@ func TestGetRemoteReader(t *testing.T) {
 	if rc == nil {
 		t.Error("Expected non-nil ReadCloser, got nil")
 	}
-	rc.Close()
+	log.Err(rc.Close())
 
-	file.Close()
+	log.Err(file.Close())
 
 	// Test Invalid URL
 	rc, filename, err = GetRemoteReader("invalid")
@@ -75,7 +76,7 @@ func TestReadRemoteFile1(t *testing.T) {
 	if err != nil {
 		t.Error("Error creating test file: ", err)
 	}
-	defer os.Remove("test.txt")
+	defer log.Err(os.Remove("test.txt"))
 
 	// Test the ReadRemoteFile function
 	d, fn, err := ReadRemoteFile("test.txt")
