@@ -2,6 +2,7 @@ package mutation
 
 import (
 	"archive/tar"
+	"bytes"
 	"cfs/loader"
 	"compress/gzip"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"strings"
 )
 
-func useGzipReader(filename string, fileReader io.ReadCloser) io.ReadCloser {
+func useGzipReader(filename string, fileReader io.Reader) io.Reader {
 	if strings.HasSuffix(filename, ".tgz") || strings.HasSuffix(filename, ".tar.gz") {
 		gzr, err := gzip.NewReader(fileReader)
 		if err != nil {
@@ -45,12 +46,12 @@ func ExtractTarball(src, dst string, force, stripRoot bool) error {
 		log.Error().Err(err).Msgf("cannot create directory at dst: %s", dst)
 		return err
 	}
-	rr, _, err := loader.GetRemoteReader(src)
+	rsrc, _, err := loader.GetRemoteData(src)
 	if err != nil {
 		log.Error().Err(err).Msgf("cannot read tarball at src: %s", src)
 		return err
 	}
-	defer rr.Close()
+	rr := bytes.NewReader(rsrc)
 	tr := tar.NewReader(useGzipReader(src, rr))
 	for {
 		header, err := tr.Next()

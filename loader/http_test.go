@@ -36,16 +36,16 @@ func TestReaderFromHttp(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := ReaderFromHttp(tt.args.fileName)
+			got, got1, err := ReadFromHttp(tt.args.fileName)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ReaderFromHttp() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ReadFromHttp() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(readFromReader(t, got), tt.want) {
-				t.Errorf("ReaderFromHttp() got = %s, want %s", got, tt.want)
+				t.Errorf("ReadFromHttp() got = %s, want %s", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("ReaderFromHttp() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("ReadFromHttp() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

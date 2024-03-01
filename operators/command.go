@@ -13,6 +13,8 @@ type Command struct {
 	WorkingDir string `yaml:"dir"`
 	OsLimits   string `yaml:"osLimits"`
 	SetEnv     string `yaml:"setEnv"`
+	OnlyIf     string `yaml:"onlyIf"`
+	NotIf      string `yaml:"notIf"`
 	EnvCmd     string
 }
 
@@ -26,6 +28,22 @@ func (c *Command) Execute() error {
 	c.Setup()
 	/* We do not replace command envars like the other functions, this is intended to be a raw command */
 	if system.Get().CanExecOnOs(c.OsLimits) {
+		// if onlyIf is set, check if it's return value is not empty / true
+		if len(c.OnlyIf) > 0 {
+			pc := exe.Run(c.OnlyIf, "")
+			if pc.Failed() || len(pc.Get()) == 0 {
+				log.Info().Msgf("skipping on (onlyIf): %s", c.OnlyIf)
+				return nil
+			}
+		}
+		// if notIf is set, check if it's return value is empty / false
+		if len(c.NotIf) > 0 {
+			pc := exe.Run(c.NotIf, "")
+			if !pc.Failed() || len(pc.Get()) > 0 {
+				log.Info().Msgf("skipping on (notIf): %s", c.NotIf)
+				return nil
+			}
+		}
 		if len(c.EnvCmd) < 1 {
 			return fmt.Errorf("no command to execute")
 		}

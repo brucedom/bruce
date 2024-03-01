@@ -1,6 +1,7 @@
 package operators
 
 import (
+	"cfs/exe"
 	"cfs/system"
 	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
@@ -12,6 +13,8 @@ type Git struct {
 	Repo     string `yaml:"gitRepo"`
 	Location string `yaml:"dest"`
 	OsLimits string `yaml:"osLimits"`
+	OnlyIf   string `yaml:"onlyIf"`
+	NotIf    string `yaml:"notIf"`
 }
 
 func (g *Git) Setup() {
@@ -30,6 +33,21 @@ func (g *Git) Execute() error {
 	g.Setup()
 	/* We do not replace command envars like the other functions, this is intended to be a raw command */
 	if system.Get().CanExecOnOs(g.OsLimits) {
+		if len(g.OnlyIf) > 0 {
+			pc := exe.Run(g.OnlyIf, "")
+			if pc.Failed() || len(pc.Get()) == 0 {
+				log.Info().Msgf("skipping on (onlyIf): %s", g.OnlyIf)
+				return nil
+			}
+		}
+		// if notIf is set, check if it's return value is empty / false
+		if len(g.NotIf) > 0 {
+			pc := exe.Run(g.NotIf, "")
+			if !pc.Failed() || len(pc.Get()) > 0 {
+				log.Info().Msgf("skipping on (notIf): %s", g.NotIf)
+				return nil
+			}
+		}
 		// if directory exists and it contains a .git directory, just return
 		if _, err := os.Stat(path.Join(g.Location, ".git")); err == nil {
 			log.Info().Msgf("git repo already exists: %s", g.Location)

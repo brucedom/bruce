@@ -1,17 +1,20 @@
 package operators
 
 import (
+	"cfs/exe"
 	"cfs/mutation"
 	"fmt"
 	"github.com/rs/zerolog/log"
 )
 
 type Tarball struct {
-	Name  string `yaml:"name"`
-	Src   string `yaml:"tarball"`
-	Dest  string `yaml:"dest"`
-	Force bool   `yaml:"force"`
-	Strip bool   `yaml:"stripRoot"`
+	Name   string `yaml:"name"`
+	Src    string `yaml:"tarball"`
+	Dest   string `yaml:"dest"`
+	Force  bool   `yaml:"force"`
+	Strip  bool   `yaml:"stripRoot"`
+	OnlyIf string `yaml:"onlyIf"`
+	NotIf  string `yaml:"notIf"`
 }
 
 func (t *Tarball) Setup() {
@@ -21,6 +24,21 @@ func (t *Tarball) Setup() {
 
 func (t *Tarball) Execute() error {
 	t.Setup()
+	if len(t.OnlyIf) > 0 {
+		pc := exe.Run(t.OnlyIf, "")
+		if pc.Failed() || len(pc.Get()) == 0 {
+			log.Info().Msgf("skipping on (onlyIf): %s", t.OnlyIf)
+			return nil
+		}
+	}
+	// if notIf is set, check if it's return value is empty / false
+	if len(t.NotIf) > 0 {
+		pc := exe.Run(t.NotIf, "")
+		if !pc.Failed() || len(pc.Get()) > 0 {
+			log.Info().Msgf("skipping on (notIf): %s", t.NotIf)
+			return nil
+		}
+	}
 	if len(t.Src) < 1 {
 		return fmt.Errorf("source is too short")
 	}

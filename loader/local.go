@@ -7,7 +7,7 @@ import (
 	"path"
 )
 
-func ReaderFromLocal(fileName string) (io.ReadCloser, string, error) {
+func ReadFromLocal(fileName string) ([]byte, string, error) {
 	fn := path.Base(fileName)
 	log.Debug().Msgf("starting local read of %s", fileName)
 	_, err := os.Stat(fileName)
@@ -16,7 +16,17 @@ func ReaderFromLocal(fileName string) (io.ReadCloser, string, error) {
 		return nil, fn, err
 	}
 	f, err := os.Open(fileName)
-	return f, fn, err
+	if err != nil {
+		log.Error().Err(err).Msgf("could not open file for reading: %s", fileName)
+		return nil, fn, err
+	}
+	d, err := io.ReadAll(f)
+	if err != nil {
+		log.Error().Err(err).Msgf("could not read local file: %s", fileName)
+		return nil, fn, err
+	}
+	log.Error().Err(f.Close())
+	return d, fn, err
 }
 
 func WriterFromLocal(fileName string) (io.WriteCloser, error) {

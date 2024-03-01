@@ -38,6 +38,8 @@ type Template struct {
 	Owner     string      `yaml:"owner"`
 	Group     string      `yaml:"group"`
 	Variables []TVars     `yaml:"vars"`
+	OnlyIf    string      `yaml:"onlyIf"`
+	NotIf     string      `yaml:"notIf"`
 }
 
 func (t *Template) Setup() {
@@ -59,6 +61,21 @@ func dump(field interface{}) string {
 
 func (t *Template) Execute() error {
 	t.Setup()
+	if len(t.OnlyIf) > 0 {
+		pc := exe.Run(t.OnlyIf, "")
+		if pc.Failed() || len(pc.Get()) == 0 {
+			log.Info().Msgf("skipping on (onlyIf): %s", t.OnlyIf)
+			return nil
+		}
+	}
+	// if notIf is set, check if it's return value is empty / false
+	if len(t.NotIf) > 0 {
+		pc := exe.Run(t.NotIf, "")
+		if !pc.Failed() || len(pc.Get()) > 0 {
+			log.Info().Msgf("skipping on (notIf): %s", t.NotIf)
+			return nil
+		}
+	}
 	log.Debug().Msgf("using template backup directory as: %s", backupDir)
 	// backup existing template if exists
 	if exe.FileExists(t.Template) {

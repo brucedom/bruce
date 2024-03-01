@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"bytes"
 	"cfs/exe"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -19,13 +20,13 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 	if perm == 0 {
 		perm = 0644
 	}
-	source, _, err := GetRemoteReader(src)
+	sd, _, err := GetRemoteData(src)
 	if err != nil {
 		log.Error().Err(err).Msg("cannot open source file")
 		return err
 	}
-	defer log.Err(source.Close())
-
+	// create a io.reader from sd
+	source := bytes.NewReader(sd)
 	if exe.FileExists(dest) {
 		if overwrite {
 			log.Err(exe.DeleteFile(dest))

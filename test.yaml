@@ -8,3 +8,5 @@ steps:
 - cmd: echo "Hello World ${Person}" >> output.txt
 - template: ./output2.txt
   source: ./template-example.txt
+- cmd: echo "Hello onlyIf ${Person}" > output.txt
+  notIf: ls /usr/local/go/bin/go

@@ -17,6 +17,8 @@ type Services struct {
 	RestartOnUpdate []string `yaml:"restartTrigger"`
 	RestartAlways   bool     `yaml:"restartAlways"`
 	OsLimits        string   `yaml:"osLimits"`
+	OnlyIf          string   `yaml:"onlyIf"`
+	NotIf           string   `yaml:"notIf"`
 }
 
 func (s *Services) Setup() {
@@ -30,6 +32,21 @@ func (s *Services) Setup() {
 func (s *Services) Execute() error {
 	si := system.Get()
 	if si.OSType == "linux" {
+		if len(s.OnlyIf) > 0 {
+			pc := exe.Run(s.OnlyIf, "")
+			if pc.Failed() || len(pc.Get()) == 0 {
+				log.Info().Msgf("skipping on (onlyIf): %s", s.OnlyIf)
+				return nil
+			}
+		}
+		// if notIf is set, check if it's return value is empty / false
+		if len(s.NotIf) > 0 {
+			pc := exe.Run(s.NotIf, "")
+			if !pc.Failed() || len(pc.Get()) > 0 {
+				log.Info().Msgf("skipping on (notIf): %s", s.NotIf)
+				return nil
+			}
+		}
 		if si.CanExecOnOs(s.OsLimits) {
 			return s.ExecuteLinux(si)
 		}

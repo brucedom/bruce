@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"cfs/loader"
 	"cfs/mutation"
 	"encoding/json"
@@ -45,11 +46,11 @@ func Upgrade(currentVersion string) error {
 	if err != nil {
 		log.Fatalf("Error downloading tarball: %s", err)
 	}
-	reader, _, err := loader.GetRemoteReader(path.Join(updateDir, fName))
+	rd, _, err := loader.GetRemoteData(path.Join(updateDir, fName))
 	if err != nil {
 		log.Fatalf("Error getting reader: %s", err)
 	}
-	defer reader.Close()
+	reader := bytes.NewReader(rd)
 	err = selfupdate.Apply(reader, selfupdate.Options{})
 	if err != nil {
 		log.Fatalf("Error updating binary (You may need to run upgrade with sudo / admin privileges): %s", err)
@@ -81,7 +82,7 @@ func getLatestTag(owner, repo string) (string, error) {
 	}
 
 	if len(tags) == 0 {
-		return "", fmt.Errorf("No tags found for the repository")
+		return "", fmt.Errorf("no tags found for the repository")
 	}
 
 	sort.Slice(tags, func(i, j int) bool {

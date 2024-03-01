@@ -2,6 +2,7 @@ package operators
 
 import (
 	"bytes"
+	"cfs/exe"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -13,9 +14,26 @@ import (
 type Signals struct {
 	PidFile string `yaml:"pidFile"`
 	Signal  string `yaml:"signal"`
+	OnlyIf  string `yaml:"onlyIf"`
+	NotIf   string `yaml:"notIf"`
 }
 
 func (s *Signals) Execute() error {
+	if len(s.OnlyIf) > 0 {
+		pc := exe.Run(s.OnlyIf, "")
+		if pc.Failed() || len(pc.Get()) == 0 {
+			log.Info().Msgf("skipping on (onlyIf): %s", s.OnlyIf)
+			return nil
+		}
+	}
+	// if notIf is set, check if it's return value is empty / false
+	if len(s.NotIf) > 0 {
+		pc := exe.Run(s.NotIf, "")
+		if !pc.Failed() || len(pc.Get()) > 0 {
+			log.Info().Msgf("skipping on (notIf): %s", s.NotIf)
+			return nil
+		}
+	}
 	if _, err := os.Stat(s.PidFile); os.IsNotExist(err) {
 		err = fmt.Errorf("pidfile does not exist at: %s", s.PidFile)
 		return err

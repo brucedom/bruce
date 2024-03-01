@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-func ReaderFromHttp(fileName string) (io.ReadCloser, string, error) {
+func ReadFromHttp(fileName string) ([]byte, string, error) {
 	req, err := http.NewRequest("GET", fileName, nil)
 	if err != nil {
 		return nil, "", err
@@ -24,7 +24,13 @@ func ReaderFromHttp(fileName string) (io.ReadCloser, string, error) {
 		return nil, "", err
 	}
 	fn := path.Base(resp.Request.URL.String())
-	return resp.Body, fn, nil
+	d, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Error().Err(err).Msgf("could not read http file: %s", fileName)
+		return nil, fn, err
+	}
+	log.Error().Err(resp.Body.Close())
+	return d, fn, nil
 }
 
 func ReadRemoteHttpIndex(remoteLoc string) ([]PageLink, error) {

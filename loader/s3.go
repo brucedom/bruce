@@ -27,7 +27,7 @@ type S3Manager struct {
 	Service s3iface.S3API
 }
 
-func ReaderFromS3(fileName string) (io.ReadCloser, string, error) {
+func ReadFromS3(fileName string) ([]byte, string, error) {
 	fn := path.Base(fileName)
 	if s == nil {
 		region := os.Getenv("AWS_REGION")
@@ -62,7 +62,13 @@ func ReaderFromS3(fileName string) (io.ReadCloser, string, error) {
 		log.Debug().Err(err).Msg("fetching object from S3 failed")
 		return nil, fn, err
 	}
-	return fd.Body, fn, nil
+	d, err := io.ReadAll(fd.Body)
+	if err != nil {
+		log.Debug().Err(err).Msg("reading object from S3 failed")
+		return nil, fn, err
+	}
+	log.Error().Err(fd.Body.Close())
+	return d, fn, nil
 }
 
 func downloadS3File(svc *s3.S3, bucket, key, aDest string, overwrite bool, wg *sync.WaitGroup, semaphore chan struct{}) {

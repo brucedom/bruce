@@ -1,6 +1,7 @@
 package operators
 
 import (
+	"cfs/exe"
 	"cfs/mutation"
 	"cfs/system"
 	"fmt"
@@ -14,6 +15,8 @@ type Cron struct {
 	Schedule string `yaml:"schedule"`
 	User     string `yaml:"username"`
 	Exec     string `yaml:"cmd"`
+	OnlyIf   string `yaml:"onlyIf"`
+	NotIf    string `yaml:"notIf"`
 }
 
 func (c *Cron) Setup() {
@@ -24,6 +27,21 @@ func (c *Cron) Setup() {
 func (c *Cron) Execute() error {
 	c.Setup()
 	if runtime.GOOS == "linux" {
+		if len(c.OnlyIf) > 0 {
+			pc := exe.Run(c.OnlyIf, "")
+			if pc.Failed() || len(pc.Get()) == 0 {
+				log.Info().Msgf("skipping on (onlyIf): %s", c.OnlyIf)
+				return nil
+			}
+		}
+		// if notIf is set, check if it's return value is empty / false
+		if len(c.NotIf) > 0 {
+			pc := exe.Run(c.NotIf, "")
+			if !pc.Failed() || len(pc.Get()) > 0 {
+				log.Info().Msgf("skipping on (notIf): %s", c.NotIf)
+				return nil
+			}
+		}
 		jobName := mutation.StripNonAlnum(c.Name)
 		log.Info().Msgf("cron: /etc/cron.d/%s", jobName)
 		c.Schedule = mutation.StripExtraWhitespaceFB(c.Schedule)

@@ -8,7 +8,7 @@ import (
 
 func TestGetRemoteReader(t *testing.T) {
 	// Test HTTP
-	rc, filename, err := GetRemoteReader("http://example.com/file.txt")
+	rc, filename, err := GetRemoteData("http://example.com/file.txt")
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}
@@ -22,7 +22,7 @@ func TestGetRemoteReader(t *testing.T) {
 
 	// Test S3
 	/*
-		rc, filename, err = GetRemoteReader("s3://bucket/file.txt")
+		rc, filename, err = GetRemoteData("s3://bucket/file.txt")
 		if err != nil {
 			t.Error("Expected no error, got", err)
 		}
@@ -46,7 +46,7 @@ func TestGetRemoteReader(t *testing.T) {
 	}
 
 	// Test Local
-	rc, filename, err = GetRemoteReader("file.txt")
+	rc, filename, err = GetRemoteData("file.txt")
 	if err != nil {
 		t.Error("Expected no error, got", err)
 	}
@@ -61,7 +61,7 @@ func TestGetRemoteReader(t *testing.T) {
 	log.Err(file.Close())
 
 	// Test Invalid URL
-	rc, filename, err = GetRemoteReader("invalid")
+	rc, filename, err = GetRemoteData("invalid")
 	if err == nil {
 		t.Error("Expected error, got nil")
 	}

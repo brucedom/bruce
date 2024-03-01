@@ -1,6 +1,7 @@
 package operators
 
 import (
+	"cfs/exe"
 	"cfs/loader"
 	"cfs/rest"
 	"fmt"
@@ -97,6 +98,8 @@ type Github struct {
 	Storage    string `yaml:"localDir"`
 	DoExtract  bool   `yaml:"doExtract"`
 	StripRoot  bool   `yaml:"stripRoot"`
+	OnlyIf     string `yaml:"onlyIf"`
+	NotIf      string `yaml:"notIf"`
 	Owner      string
 	RepoName   string
 	GHClient   *rest.RESTClient
@@ -109,6 +112,21 @@ func (g *Github) Setup() {
 
 func (g *Github) Execute() error {
 	g.Setup()
+	if len(g.OnlyIf) > 0 {
+		pc := exe.Run(g.OnlyIf, "")
+		if pc.Failed() || len(pc.Get()) == 0 {
+			log.Info().Msgf("skipping on (onlyIf): %s", g.OnlyIf)
+			return nil
+		}
+	}
+	// if notIf is set, check if it's return value is empty / false
+	if len(g.NotIf) > 0 {
+		pc := exe.Run(g.NotIf, "")
+		if !pc.Failed() || len(pc.Get()) > 0 {
+			log.Info().Msgf("skipping on (notIf): %s", g.NotIf)
+			return nil
+		}
+	}
 	preStrip := strings.TrimLeft(g.Repo, "https://")
 	strip := strings.TrimRight(preStrip, ".git")
 	parts := strings.Split(strip, "/")
