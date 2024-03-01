@@ -7,7 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/minio/selfupdate v0.6.0
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.32.0
 	github.com/urfave/cli/v2 v2.27.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -27,8 +27,8 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
