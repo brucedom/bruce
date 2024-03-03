@@ -98,6 +98,13 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		return nil
 	}
 
+	lp := &operators.Loop{}
+	if err := nd.Decode(lp); err == nil && len(lp.LoopScript) > 0 {
+		log.Debug().Msg("matching loop operator")
+		e.Action = lp
+		return nil
+	}
+
 	log.Debug().Msg("no matching operator found, using null operator")
 	e.Action = &operators.NullOperator{}
 	return nil

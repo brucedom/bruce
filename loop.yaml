@@ -1,0 +1,6 @@
+---
+steps:
+  - cmd: rm -f output.txt
+  - loopScript: test.yaml
+    count: 3
+    var: Option

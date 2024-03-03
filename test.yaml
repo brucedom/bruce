@@ -1,12 +1,13 @@
 ---
 variables:
   Person: "Steven"
+  # note do not set Option here as it will be overwritten
 steps:
-- cmd: echo "Hello World ${Person}" > output.txt
+- cmd: echo "Hello World ${Person} - ${Option}" >> output.txt
 - cmd: echo "Steven"
   setEnv: Person
-- cmd: echo "Hello World ${Person}" >> output.txt
+- cmd: echo "Hello World ${Person} - ${Option}" >> output.txt
 - template: ./output2.txt
   source: ./template-example.txt
-- cmd: echo "Hello onlyIf ${Person}" > output.txt
+- cmd: echo "Hello onlyIf ${Person} - ${Option}" >> output.txt
   notIf: ls /usr/local/go/bin/go

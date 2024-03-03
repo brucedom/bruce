@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/minio/selfupdate"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -71,7 +71,7 @@ func getLatestTag(owner, repo string) (string, error) {
 		return "", fmt.Errorf("GitHub API request failed with status: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
