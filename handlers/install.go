@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"cfs/config"
-	"cfs/loader"
+	"bruce/config"
+	"bruce/loader"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 	"os"

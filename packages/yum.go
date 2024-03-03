@@ -1,8 +1,8 @@
 package packages
 
 import (
-	"cfs/exe"
-	"cfs/loader"
+	"bruce/exe"
+	"bruce/loader"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"os"

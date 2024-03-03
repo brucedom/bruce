@@ -42,7 +42,7 @@ func Search(query, q2 string) error {
 		}
 	}
 
-	searchUrl := "https://configset.com/api/" + searchMode
+	searchUrl := "https://brucedom.com/api/" + searchMode
 
 	req, err := http.NewRequest("GET", searchUrl+"?search="+q, nil)
 	if err != nil {

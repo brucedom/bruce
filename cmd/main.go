@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cfs/config"
-	"cfs/handlers"
-	"cfs/system"
+	"bruce/config"
+	"bruce/handlers"
+	"bruce/system"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
@@ -29,19 +29,19 @@ func main() {
 		os.Exit(1)
 	}
 	app := &cli.App{
-		Name:  "cfs",
-		Usage: "Start with: /path/to/cfs https://someinstallhost/installme.yml",
+		Name:  "bruce",
+		Usage: "Start with: /path/to/bruce https://someinstallhost/installme.yml",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "config",
-				Value: "/etc/cfs/config.yml",
+				Value: "/etc/bruce/config.yml",
 				Usage: "See docs for supported endpoints, eg: https://s3.amazonaws.com/somebucket/my_install.yml",
 			},
 			&cli.StringFlag{
 				Name:    "property-file",
 				Aliases: []string{"p"},
 				Value:   "",
-				Usage:   "Loads properties from a file, eg: /etc/cfs/properties.yml to be used as environment variables for operators and templates",
+				Usage:   "Loads properties from a file, eg: /etc/bruce/properties.yml to be used as environment variables for operators and templates",
 			},
 			&cli.BoolFlag{
 				Name:    "debug",
@@ -92,7 +92,7 @@ func main() {
 			{
 				Name:    "search",
 				Aliases: []string{"find"},
-				Usage:   "this will search the ConfigSet repository for a related manifest",
+				Usage:   "this will search the Bruce repository for a related manifest",
 				Action: func(cCtx *cli.Context) error {
 					if cCtx.Bool("debug") {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -115,7 +115,7 @@ func main() {
 			},
 			{
 				Name:  "create",
-				Usage: "this command will create a new manifest or template for you to upload directly to your configset.com account and then install, you must have CFS_KEY env variable set to your API key from configset.com",
+				Usage: "this command will create a new manifest or template for you to upload directly to your brucedom.com account and then install, you must have BRUCE_KEY env variable set to your API key from brucedom.com",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:    "kind",
@@ -146,7 +146,7 @@ func main() {
 			},
 			{
 				Name:  "edit",
-				Usage: "this command will edit a manifest or template by re-uploading to your configset.com account, you must have CFS_KEY env variable set to your API key from configset.com, name and description can be edited directly on configset.com",
+				Usage: "this command will edit a manifest or template by re-uploading to your brucedom.com account, you must have BRUCE_KEY env variable set to your API key from brucedom.com, name and description can be edited directly on brucedom.com",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:    "kind",
@@ -171,7 +171,7 @@ func main() {
 			},
 			{
 				Name:  "upgrade",
-				Usage: "this command will upgrade the cfs application to the latest version",
+				Usage: "this command will upgrade the bruce application to the latest version",
 				Action: func(cCtx *cli.Context) error {
 					if cCtx.Bool("debug") {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -182,7 +182,7 @@ func main() {
 			},
 			{
 				Name:  "version",
-				Usage: "this prints the current version of cfs and the current latest version of cfs",
+				Usage: "this prints the current version of bruce and the current latest version of bruce",
 				Action: func(cCtx *cli.Context) error {
 					if cCtx.Bool("debug") {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)

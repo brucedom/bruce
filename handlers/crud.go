@@ -62,7 +62,7 @@ func readContent(filename string) ([]byte, error) {
 }
 
 func GetItem(kind, id string) *ItemResponse {
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://configset.com/api/%ss", kind), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://brucedom.com/api/%ss", kind), nil)
 	if err != nil {
 		fmt.Println("Something went wrong: " + err.Error())
 		return nil
@@ -93,9 +93,9 @@ func GetItem(kind, id string) *ItemResponse {
 }
 
 func Edit(kind, id, filename string) {
-	key := os.Getenv("CFS_KEY")
+	key := os.Getenv("BRUCE_KEY")
 	if key == "" {
-		fmt.Println("CFS_KEY environment variable not set, please set this to your API key from configset.com")
+		fmt.Println("BRUCE_KEY environment variable not set, please set this to your API key from brucedom.com")
 		return
 	}
 	if kind == "" {
@@ -138,7 +138,7 @@ func Edit(kind, id, filename string) {
 	// make an io.reader from the body
 	bodyReader := io.NopCloser(bytes.NewReader(body))
 	// make a request
-	req, err := http.NewRequest("PUT", fmt.Sprintf("https://configset.com/api/%ss/%s", kind, id), bodyReader)
+	req, err := http.NewRequest("PUT", fmt.Sprintf("https://brucedom.com/api/%ss/%s", kind, id), bodyReader)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -164,9 +164,9 @@ func Edit(kind, id, filename string) {
 }
 
 func Create(kind, name, description, filename string) {
-	key := os.Getenv("CFS_KEY")
+	key := os.Getenv("BRUCE_KEY")
 	if key == "" {
-		fmt.Println("CFS_KEY environment variable not set, please set this to your API key from configset.com")
+		fmt.Println("BRUCE_KEY environment variable not set, please set this to your API key from brucedom.com")
 		return
 	}
 	if kind == "" {
@@ -209,7 +209,7 @@ func Create(kind, name, description, filename string) {
 	// make an io.reader from the body
 	bodyReader := io.NopCloser(bytes.NewReader(body))
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://configset.com/api/%ss", kind), bodyReader)
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://brucedom.com/api/%ss", kind), bodyReader)
 	// now submit the request
 	if err != nil {
 		fmt.Println(err)

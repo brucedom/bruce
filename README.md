@@ -1,35 +1,35 @@
-==== CFS ====
+==== BRUCE ====
 
 Basic runtime for uniform compute environments
 
-Bruce was initially intended to just operate as a more advanced exec handler for serf.  It has somewhat evolved at this point far beyond that in order to become a more stable OS configuration and installation utility.  More stable and capable as it does not require pre-existing libraries on the base OS like ansible, or agents that must be configured and associated with a chef server etc.  One of the key characteristics is the ability to load templates directly through multiple loaders.  This enables not only the ability to quickly setup a fleet by hostname as example but also to effectively bootstrap an instance on EC2 in a secure way by limiting that particular instance profile to an s3 prefix from which cfs will load the installer config.
+Bruce was initially intended to just operate as a more advanced exec handler for serf.  It has somewhat evolved at this point far beyond that in order to become a more stable OS configuration and installation utility.  More stable and capable as it does not require pre-existing libraries on the base OS like ansible, or agents that must be configured and associated with a chef server etc.  One of the key characteristics is the ability to load templates directly through multiple loaders.  This enables not only the ability to quickly setup a fleet by hostname as example but also to effectively bootstrap an instance on EC2 in a secure way by limiting that particular instance profile to an s3 prefix from which bruce will load the installer config.
 
-## TLDR How do I run cfs.
+## TLDR How do I run bruce.
 
-### A one liner to download latest cfs:
+### A one liner to download latest bruce:
 ```
-wget -qO- $(curl -s https://api.github.com/repos/configset/cfs/releases/latest | grep "linux_amd64"|grep https | cut -d : -f 2,3 | tr -d \" | awk '{$1=$1};1') |tar -xvz
+wget -qO- $(curl -s https://api.github.com/repos/brucedom/bruce/releases/latest | grep "linux_amd64"|grep https | cut -d : -f 2,3 | tr -d \" | awk '{$1=$1};1') |tar -xvz
 ```
 
-Once you've downloaded your respective OS package from: https://github.com/configset/cfs/releases/latest
+Once you've downloaded your respective OS package from: https://github.com/brucedom/bruce/releases/latest
 
-Extract it and run cfs with a config file, for an example config file see: https://github.com/configset/cfs/blob/main/config.example.yml
+Extract it and run bruce with a config file, for an example config file see: https://github.com/brucedom/bruce/blob/main/config.example.yml
 
 ```
-./cfs --config=install.yml
+./bruce --config=install.yml
 ```
 
 Or in the event you want to load it from an instance that should load an internal s3 hosted install file:
 ```
-./cfs --config s3://somebucket/install.yml
+./bruce --config s3://somebucket/install.yml
 ```
 
 Or if you prefer to have an internal service that hosts all your files:
 ```
-./cfs --config https://some.hostname/$(hostname -f).yml
+./bruce --config https://some.hostname/$(hostname -f).yml
 ```
 
-Currently cfs supports several operators within the config file that provide the functionality:
+Currently bruce supports several operators within the config file that provide the functionality:
 * Native commands with built in os limiters (so you can limit which OS's will run what commands) - see nginx example
 * Services which will enable services and will auto restart services based on templates that trigger restarts during a run (can be used with serf to auto update)
 * Packages which will install OS packages on the host system to configure the system for use
@@ -38,7 +38,7 @@ Currently cfs supports several operators within the config file that provide the
 * Templates which support injection of variables via locally run commands as input value and provided template values
 * Several more operators to come.
 
-Principles for building cfs & why not ansible?:
+Principles for building bruce & why not ansible?:
 - NO additional OS dependencies, should be able to use it on scratch if I want...
 - Single binary (aka go binary)
 - Multi platform (aka linux / mac / [basic windows support already])

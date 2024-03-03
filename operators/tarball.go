@@ -1,8 +1,8 @@
 package operators
 
 import (
-	"cfs/exe"
-	"cfs/mutation"
+	"bruce/exe"
+	"bruce/mutation"
 	"fmt"
 	"github.com/rs/zerolog/log"
 )

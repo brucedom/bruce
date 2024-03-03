@@ -1,7 +1,7 @@
 package packages
 
 import (
-	"cfs/exe"
+	"bruce/exe"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"strings"

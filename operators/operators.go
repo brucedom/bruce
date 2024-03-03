@@ -1,7 +1,7 @@
 package operators
 
 import (
-	"cfs/system"
+	"bruce/system"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"os"

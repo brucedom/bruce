@@ -1,4 +1,4 @@
-APP := cfs
+APP := bruce
 APP_ENTRY := cmd/main.go
 SHELL := /bin/bash
 VER := source

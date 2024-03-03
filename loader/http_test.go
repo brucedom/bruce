@@ -27,7 +27,7 @@ func TestReaderFromHttp(t *testing.T) {
 	}{
 		{
 			name:    "read from http",
-			args:    args{fileName: "https://raw.githubusercontent.com/configset/cfs/main/test.txt"},
+			args:    args{fileName: "https://raw.githubusercontent.com/brucedom/bruce/main/test.txt"},
 			want:    "HelloWorld",
 			want1:   "test.txt",
 			wantErr: false,

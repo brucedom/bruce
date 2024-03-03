@@ -1,8 +1,8 @@
 package config
 
 import (
-	"cfs/loader"
-	"cfs/operators"
+	"bruce/loader"
+	"bruce/operators"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -120,7 +120,7 @@ func LoadConfig(fileName string) (*TemplateData, error) {
 	log.Debug().Bytes("rawConfig", d)
 	c := &TemplateData{}
 
-	if os.Getenv("CFS_DEBUG") == "true" {
+	if os.Getenv("BRUCE_DEBUG") == "true" {
 		log.Debug().Msg("debug mode enabled")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}

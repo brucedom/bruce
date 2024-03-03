@@ -8,7 +8,7 @@ steps:
       - nginx
     osLimits: debian|ubuntu|centos|fedora|redhat|arch
   - template: /etc/nginx/nginx.conf
-    source: https://raw.githubusercontent.com/configset/cfs/main/examples/nginx/templates/etc/nginx/nginx.conf
+    source: https://raw.githubusercontent.com/brucedom/bruce/main/examples/nginx/templates/etc/nginx/nginx.conf
     perms: 0664
     owner: root
     group: root
@@ -17,12 +17,12 @@ steps:
         input: nginx|apt=www-data  # uses nginx for all platforms that don't use apt installer on those use www-data
         variable: NGINX_USER
   - template: /etc/nginx/vhosts/default.conf
-    source: https://raw.githubusercontent.com/configset/cfs/main/examples/nginx/templates/etc/nginx/vhosts/default.conf
+    source: https://raw.githubusercontent.com/brucedom/bruce/main/examples/nginx/templates/etc/nginx/vhosts/default.conf
     owner: root
     group: root
     perms: 0664
   - template: /var/www/html/index.html
-    source: https://raw.githubusercontent.com/configset/cfs/main/examples/nginx/templates/var/www/html/index.html
+    source: https://raw.githubusercontent.com/brucedom/bruce/main/examples/nginx/templates/var/www/html/index.html
     owner: root
     group: root
     perms: 0664

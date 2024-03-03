@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"bruce/loader"
+	"bruce/mutation"
 	"bytes"
-	"cfs/loader"
-	"cfs/mutation"
 	"encoding/json"
 	"fmt"
 	"github.com/minio/selfupdate"
@@ -26,7 +26,7 @@ func Upgrade(currentVersion string) error {
 	// then we need to get the latest version
 	fmt.Println("Checking for updates... (current version is " + currentVersion + ")")
 	fmt.Println("System information: " + runtime.GOOS + "/" + runtime.GOARCH)
-	latestTag, err := getLatestTag("configset", "cfs")
+	latestTag, err := getLatestTag("brucedom", "bruce")
 	if err != nil {
 		log.Fatalf("Error fetching latest tag: %s", err)
 	}
@@ -36,9 +36,9 @@ func Upgrade(currentVersion string) error {
 	}
 	fmt.Println("There is a new version available: " + latestTag)
 
-	url := fmt.Sprintf("https://github.com/configset/cfs/releases/download/%s/cfs_%s_%s_%s.tar.gz", latestTag, latestTag[1:], runtime.GOOS, runtime.GOARCH)
-	updateDir := path.Join(os.TempDir(), "cfs-update", fmt.Sprintf("%c", os.PathSeparator))
-	fName := "cfs"
+	url := fmt.Sprintf("https://github.com/brucedom/bruce/releases/download/%s/bruce_%s_%s_%s.tar.gz", latestTag, latestTag[1:], runtime.GOOS, runtime.GOARCH)
+	updateDir := path.Join(os.TempDir(), "bruce-update", fmt.Sprintf("%c", os.PathSeparator))
+	fName := "bruce"
 	if runtime.GOOS == "windows" {
 		fName += ".exe"
 	}

@@ -1,8 +1,8 @@
 package operators
 
 import (
-	"cfs/exe"
-	"cfs/system"
+	"bruce/exe"
+	"bruce/system"
 	"github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"os"

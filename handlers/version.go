@@ -3,8 +3,8 @@ package handlers
 import "fmt"
 
 func Version(currentVersion string) error {
-	fmt.Println("CFS version: " + currentVersion)
-	tag, err := getLatestTag("configset", "cfs")
+	fmt.Println("BRUCE version: " + currentVersion)
+	tag, err := getLatestTag("brucedom", "bruce")
 	if err != nil {
 		return err
 	}

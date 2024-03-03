@@ -2,5 +2,5 @@
 APP_VERSION: v0.9
 steps:
   - cmd: mkdir -p .build
-  - cmd: go build -ldflags "-s -w -X main.version=${APP_VERSION}" -o .build/cfs cmd/main.go
-  - cmd: sudo cp -f .build/cfs /usr/local/bin/cfs
+  - cmd: go build -ldflags "-s -w -X main.version=${APP_VERSION}" -o .build/bruce cmd/main.go
+  - cmd: sudo cp -f .build/bruce /usr/local/bin/bruce

@@ -1,4 +1,4 @@
-project_name: cfs
+project_name: bruce
 builds:
   - main: ./cmd/
     ldflags:
