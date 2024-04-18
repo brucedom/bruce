@@ -1,0 +1,15 @@
+[Unit]
+Description=Bruce Server Instance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=root
+Group=root
+TimeoutStartSec=10
+Restart=always
+Environment="APP_ENV=dv"
+ExecStart=/usr/local/bin/bruce --config=/some/deploy/path/install.yml server
+
+[Install]
+WantedBy=multi-user.target
