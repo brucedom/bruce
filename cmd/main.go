@@ -42,6 +42,11 @@ func main() {
 				Aliases: []string{"p"},
 				Value:   "",
 				Usage:   "Loads properties from a file, eg: /etc/bruce/properties.yml to be used as environment variables for operators and templates",
+			}, &cli.IntFlag{
+				Name:    "server-port",
+				Aliases: []string{"P"},
+				Value:   3619,
+				Usage:   "runs an HTTP server to listen for GET/PUT/POST requests on this port to execute the property file provided",
 			},
 			&cli.BoolFlag{
 				Name:    "debug",
@@ -86,6 +91,23 @@ func main() {
 						os.Exit(1)
 					}
 					handlers.Install(t, cCtx.String("property-file"))
+					return nil
+				},
+			},
+			{
+				Name:    "server",
+				Aliases: []string{"svr"},
+				Usage:   "this will start the bruce server, allowing the preset config to be run on trigger",
+				Action: func(cCtx *cli.Context) error {
+					if cCtx.Bool("debug") {
+						zerolog.SetGlobalLevel(zerolog.DebugLevel)
+					}
+					t, err := config.LoadConfig(cCtx.String("config"))
+					if err != nil {
+						log.Error().Err(err).Msg("cannot continue without configuration data")
+						os.Exit(1)
+					}
+					handlers.RunServer(t, cCtx.String("property-file"), cCtx.Int("server-port"))
 					return nil
 				},
 			},
