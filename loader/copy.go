@@ -46,7 +46,6 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 		log.Error().Err(err).Msgf("could not open file for writing copy: %s", dest)
 		return err
 	}
-	defer log.Err(destination.Close())
 	printSrc := src
 	if len(src) > 32 {
 		printSrc = "..." + src[len(src)-32:]
@@ -60,8 +59,11 @@ func CopyFile(src, dest string, perm os.FileMode, overwrite bool) error {
 	sln, err := io.Copy(destination, source)
 	if err != nil {
 		log.Error().Err(err).Msg("could not copy file")
+		log.Err(destination.Close())
+		return err
 	}
 	log.Debug().Msgf("copied %d bytes", sln)
+	log.Err(destination.Close())
 	return nil
 }
 
