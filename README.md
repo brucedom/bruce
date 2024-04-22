@@ -46,9 +46,10 @@ Principles for building bruce & why not ansible?:
 - Must configure templates (concurrently if possible)
 - Must be way faster than ansible IE: configure entire system before checks pass on an amazon t2.micro for general installs like nginx
 
-===== WIP =====
-- For template variables make it an array on \n so it's simpler to use in go templates, and reduces sed / awk cmd complexity for generating the output.
-- Download and extract tarball to specified directory
-- moar testing...
-- (should user adding be added/works well enough with cmd?)
-- Anyone use windows a lot that can help provide ways to use bash / powerscript?  right now it saves to bat file for executing cmds, also no idea about package managers on windows
+===== Extended Functionality =====
+- Template variables are fully injected into the template system and the ability to set envars on the fly exists, benefit here is that those envars only exist during the session run making it beneficial even for configuring connections with passwords.
+- Download and extract tarball to specified directory, stripping of initial directories inside also exists making it simple to handle package releases of applications.
+- Execute or exclude use of commands based on conditions.
+- Basic windows functionality but requires additional sourcing from the community to make it a fully baked solution.
+- Run as a server, enable the ability to trigger runs remotely through a basic GET request reducing the need for login credentials.
+- Restart services only on change detection.
