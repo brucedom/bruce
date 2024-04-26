@@ -63,7 +63,6 @@ func executeRunServer(w http.ResponseWriter, _ *http.Request, propfile string, t
 			err := step.Action.Execute()
 			if err != nil {
 				log.Error().Err(err).Msgf("error executing step [%d]", idx+1)
-				w.WriteHeader(http.StatusInternalServerError)
 				cnt, err := w.Write([]byte("Execution Failed"))
 				log.Error().Err(err).Msgf("wrote %d bytes", cnt)
 				return
