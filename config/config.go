@@ -104,6 +104,12 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		e.Action = lp
 		return nil
 	}
+	re := &operators.RemoteExec{}
+	if err := nd.Decode(re); err == nil && len(re.ExecCmd) > 0 {
+		log.Debug().Msg("matching remote exec operator")
+		e.Action = re
+		return nil
+	}
 
 	log.Debug().Msg("no matching operator found, using null operator")
 	e.Action = &operators.NullOperator{}

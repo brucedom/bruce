@@ -17,7 +17,7 @@ func RunServer(t *config.TemplateData, propfile string, portNumber int) error {
 	if len(t.Variables) > 0 {
 		for k, v := range t.Variables {
 			log.Debug().Msgf("setting env var: %s=%s", k, v)
-			os.Setenv(k, v)
+			log.Error().Err(os.Setenv(k, v))
 		}
 	}
 
@@ -28,7 +28,8 @@ func RunServer(t *config.TemplateData, propfile string, portNumber int) error {
 			defer mutex.Unlock()
 			if inProgress {
 				w.WriteHeader(http.StatusTooManyRequests) // 429 status code
-				w.Write([]byte("Execution in Progress... please wait"))
+				cnt, err := w.Write([]byte("Execution in Progress... please wait"))
+				log.Error().Err(err).Msgf("wrote %d bytes", cnt)
 				return
 			}
 			inProgress = true // Set the flag to true to indicate that an execution is starting
@@ -41,7 +42,8 @@ func RunServer(t *config.TemplateData, propfile string, portNumber int) error {
 				executeRunServer(w, r, propfile, t) // Execute the server logic
 			}()
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Execution started")) // Immediately return to the requester
+			cnt, err := w.Write([]byte("Execution started")) // Immediately return to the requester
+			log.Error().Err(err).Msgf("wrote %d bytes", cnt)
 		}),
 	}
 
@@ -49,7 +51,7 @@ func RunServer(t *config.TemplateData, propfile string, portNumber int) error {
 	return srv.ListenAndServe() // Start the server
 }
 
-func executeRunServer(w http.ResponseWriter, r *http.Request, propfile string, t *config.TemplateData) {
+func executeRunServer(w http.ResponseWriter, _ *http.Request, propfile string, t *config.TemplateData) {
 	log.Debug().Msgf("propfile: %s", propfile)
 	err := loadPropData(propfile)
 	if err != nil {
@@ -62,13 +64,13 @@ func executeRunServer(w http.ResponseWriter, r *http.Request, propfile string, t
 			if err != nil {
 				log.Error().Err(err).Msgf("error executing step [%d]", idx+1)
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("Execution Failed"))
+				cnt, err := w.Write([]byte("Execution Failed"))
+				log.Error().Err(err).Msgf("wrote %d bytes", cnt)
 				return
 			}
 		}
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Execution Succeeded"))
+	cnt, err := w.Write([]byte("Execution Succeeded"))
+	log.Error().Err(err).Msgf("wrote %d bytes", cnt)
 	log.Info().Msg("execution succeeded...")
-
 }
