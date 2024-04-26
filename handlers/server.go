@@ -64,12 +64,16 @@ func executeRunServer(w http.ResponseWriter, _ *http.Request, propfile string, t
 			if err != nil {
 				log.Error().Err(err).Msgf("error executing step [%d]", idx+1)
 				cnt, err := w.Write([]byte("Execution Failed"))
-				log.Error().Err(err).Msgf("wrote %d bytes", cnt)
+				if err != nil {
+					log.Error().Err(err).Msgf("wrote %d bytes", cnt)
+				}
 				return
 			}
 		}
 	}
 	cnt, err := w.Write([]byte("Execution Succeeded"))
-	log.Error().Err(err).Msgf("wrote %d bytes", cnt)
+	if err != nil {
+		log.Error().Err(err).Msgf("wrote %d bytes", cnt)
+	}
 	log.Info().Msg("execution succeeded...")
 }
