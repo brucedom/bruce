@@ -3,7 +3,7 @@ module bruce
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go v1.54.3
+	github.com/aws/aws-sdk-go v1.54.12
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/minio/selfupdate v0.6.0
