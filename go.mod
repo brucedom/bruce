@@ -8,7 +8,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/minio/selfupdate v0.6.0
 	github.com/rs/zerolog v1.33.0
-	github.com/urfave/cli/v2 v2.27.3
+	github.com/urfave/cli/v2 v2.27.4
 	golang.org/x/crypto v0.25.0
 	gopkg.in/yaml.v3 v3.0.1
 )
