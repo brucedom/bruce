@@ -28,4 +28,5 @@ terraform.tfstate
 terraform.tfstate.*
 .terraform/
 output.txt
-output2.txt.vscode/
+output2.txt
+.vscode/

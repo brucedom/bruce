@@ -1,0 +1,10 @@
+---
+endpoint: ws://localhost:8888/workers
+origin: wss://localhost:8888/workers
+key: 2dc9799b-49d5-45c6-945e-c55d0061550f
+execution:
+  - name: run all default
+    type: event # can also be cadence
+    cadence: 10 # execution in minutes if cadence is chosen
+    target: test.yaml # should be the path to the manifest to be executed, in this case main branch example config
+    authorization: YOUR_EXECUTION_KEY

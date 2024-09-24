@@ -102,24 +102,8 @@ func main() {
 					if cCtx.Bool("debug") {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)
 					}
-					t, err := config.LoadConfig(cCtx.String("config"))
-					if err != nil {
-						log.Error().Err(err).Msg("cannot continue without configuration data")
-						os.Exit(1)
-					}
-					handlers.RunServer(t, cCtx.String("property-file"), cCtx.Int("server-port"))
-					return nil
-				},
-			},
-			{
-				Name:    "search",
-				Aliases: []string{"find"},
-				Usage:   "this will search the Bruce repository for a related manifest",
-				Action: func(cCtx *cli.Context) error {
-					if cCtx.Bool("debug") {
-						zerolog.SetGlobalLevel(zerolog.DebugLevel)
-					}
-					handlers.Search(cCtx.Args().First(), cCtx.Args().Get(1))
+
+					handlers.RunServer(cCtx.Args().First(), cCtx.Int("server-port"))
 					return nil
 				},
 			},
