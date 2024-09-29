@@ -61,7 +61,7 @@ func RunServer(svr_config string, portNumber int) error {
 			wg.Add(1)
 			go func(e config.Execution) {
 				defer wg.Done()
-				SocketRunner(ctx, e.Name, e.Target, sc.Endpoint, sc.Key, e.Authorization)
+				SocketRunner(ctx, e.Endpoint, e.Target, sc.Key, e.Authorization)
 			}(e)
 		}
 	}

@@ -14,7 +14,3 @@ steps:
 - copy: ./output.txt
   dest: ./output3.txt
 - cmd: rm output3.txt
-- remoteCmd: env > test.txt
-  host: whattingh@mlx.nitecon.net
-  notIf: ls /usr/local/go/bin/go
-  onlyIf: ls /usr/local/go/bin/go
