@@ -42,11 +42,6 @@ func main() {
 				Aliases: []string{"p"},
 				Value:   "",
 				Usage:   "Loads properties from a file, eg: /etc/bruce/properties.yml to be used as environment variables for operators and templates",
-			}, &cli.IntFlag{
-				Name:    "server-port",
-				Aliases: []string{"P"},
-				Value:   3619,
-				Usage:   "runs an HTTP server to listen for GET/PUT/POST requests on this port to execute the property file provided",
 			},
 			&cli.BoolFlag{
 				Name:    "debug",
@@ -103,7 +98,7 @@ func main() {
 						zerolog.SetGlobalLevel(zerolog.DebugLevel)
 					}
 
-					handlers.RunServer(cCtx.Args().First(), cCtx.Int("server-port"))
+					handlers.RunServer(cCtx.Args().First())
 					return nil
 				},
 			},

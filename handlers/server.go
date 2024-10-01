@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunServer(svr_config string, portNumber int) error {
+func RunServer(svr_config string) error {
 	log.Debug().Msg("starting server task")
 
 	// Read server configuration
@@ -22,6 +22,22 @@ func RunServer(svr_config string, portNumber int) error {
 		log.Error().Err(err).Msg("cannot continue without configuration data")
 		os.Exit(1)
 	}
+
+	// Validate that the default action exists
+	defaultFound := false
+	for _, e := range sc.Execution {
+		if e.Action == "default" {
+			defaultFound = true
+			break
+		}
+	}
+	if !defaultFound {
+		log.Error().Msg("default action not found in configuration")
+		os.Exit(1)
+	}
+
+	// Separate cadence and event executions
+	var eventExecutions []config.Execution
 
 	// Channel to receive OS signals
 	sigCh := make(chan os.Signal, 1)
@@ -35,35 +51,32 @@ func RunServer(svr_config string, portNumber int) error {
 
 	log.Info().Msg("Starting Bruce in server mode")
 
-	if len(sc.Execution) == 0 {
-		log.Error().Msg("no execution targets configured")
-		os.Exit(1)
-	}
-
+	// Loop through the executions and handle cadence runners and event executions
 	for _, e := range sc.Execution {
-		// Validate execution type
-		if e.Type != "event" && e.Type != "cadence" {
-			log.Info().Msgf("Skipping invalid execution target: %s must be of type 'event' or 'cadence'", e.Name)
-			continue
-		}
-
-		// Start CadenceRunner
+		// Start CadenceRunner for "cadence" type executions
 		if e.Type == "cadence" {
 			wg.Add(1)
 			go func(e config.Execution) {
 				defer wg.Done()
 				CadenceRunner(ctx, e.Name, e.Target, e.Cadence)
 			}(e)
+		} else if e.Type == "event" {
+			// Add "event" type executions to the list for the SocketRunner
+			eventExecutions = append(eventExecutions, e)
+		} else {
+			log.Info().Msgf("Skipping invalid execution target: %s must be of type 'event' or 'cadence'", e.Name)
 		}
+	}
 
-		// Start SocketRunner
-		if e.Type == "event" {
-			wg.Add(1)
-			go func(e config.Execution) {
-				defer wg.Done()
-				SocketRunner(ctx, e.Endpoint, e.Target, sc.Key, e.Authorization)
-			}(e)
-		}
+	// Start the SocketRunner only if there are event executions
+	if len(eventExecutions) > 0 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			SocketRunner(ctx, sc.Endpoint, sc.RunnerID, sc.Authorization, eventExecutions)
+		}()
+	} else {
+		log.Info().Msg("No event executions found, skipping SocketRunner initialization")
 	}
 
 	// Wait for a signal to shut down

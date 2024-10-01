@@ -6,17 +6,18 @@ import (
 )
 
 type Execution struct {
-	Name          string `yaml:"name"`
-	Endpoint      string `yaml:"endpoint"`
-	Authorization string `yaml:"authorization"`
-	Type          string `yaml:"type"`
-	Cadence       int    `yaml:"cadence"`
-	Target        string `yaml:"target"`
+	Name    string `yaml:"name"`
+	Action  string `yaml:"action"`
+	Type    string `yaml:"type"`
+	Cadence int    `yaml:"cadence"`
+	Target  string `yaml:"target"`
 }
 
 type ServerConfig struct {
-	Key       string      `yaml:"key"`
-	Execution []Execution `yaml:"execution"`
+	RunnerID      string      `yaml:"runner-id"`
+	Authorization string      `yaml:"authorization"`
+	Endpoint      string      `yaml:"endpoint"`
+	Execution     []Execution `yaml:"execution"`
 }
 
 func ReadServerConfig(l string, sc *ServerConfig) error {

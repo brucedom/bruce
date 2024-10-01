@@ -23,7 +23,7 @@ type AuthMessage struct {
 }
 
 // DataHandler: Processes messages sent over the WebSocket connection
-func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey, endpoint string) error {
+func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string, execution []config.Execution) error {
 	for {
 		select {
 		case <-ctx.Done():
@@ -87,14 +87,20 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey, endpo
 				log.Info().Msgf("Authentication response received: %s", msg.Message)
 			case "execute":
 				log.Info().Msgf("Execute request received: %s", msg.Message)
-				t, err := config.LoadConfig(endpoint)
-				if err != nil {
-					log.Error().Err(err).Msgf("cannot continue without configuration data, bad config file or missing config file at: %s", endpoint)
-
-				}
-				err = ExecuteSteps(t)
-				if err != nil {
-					log.Error().Err(err).Msg("ExecuteSteps error")
+				// Match the action with the execution in config
+				for _, exec := range execution {
+					if exec.Action == msg.Message {
+						// Execute the steps for the corresponding action
+						t, err := config.LoadConfig(exec.Target)
+						if err != nil {
+							log.Error().Err(err).Msgf("Cannot continue without configuration data, bad config file or missing config file at: %s", exec.Target)
+							continue
+						}
+						err = ExecuteSteps(t)
+						if err != nil {
+							log.Error().Err(err).Msg("ExecuteSteps error")
+						}
+					}
 				}
 			default:
 				log.Warn().Msgf("DataHandler: Unknown message type: %s", msg.MsgType)
@@ -104,7 +110,7 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey, endpo
 }
 
 // SocketRunner: Handles the connection and initializes DataHandler
-func SocketRunner(ctx context.Context, sockloc, endpoint, skey, authkey string) {
+func SocketRunner(ctx context.Context, sockloc, skey, authkey string, execution []config.Execution) {
 	// Initialize connection to WebSocket
 	for {
 		select {
@@ -124,7 +130,7 @@ func SocketRunner(ctx context.Context, sockloc, endpoint, skey, authkey string) 
 			log.Info().Msg("SocketRunner connected successfully")
 
 			// Start the DataHandler with the connection
-			err = DataHandler(ctx, c, skey, authkey, endpoint)
+			err = DataHandler(ctx, c, skey, authkey, execution)
 			if err != nil {
 				log.Error().Err(err).Msg("DataHandler error, connection likely lost")
 				c.Close(websocket.StatusNormalClosure, "Connection lost, retrying...")
