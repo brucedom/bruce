@@ -63,27 +63,6 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		return nil
 	}
 
-	pr := &operators.PackageRepo{}
-	if err := nd.Decode(pr); err == nil && len(pr.Location) > 0 {
-		log.Debug().Msg("matching package repository operator")
-		e.Action = pr
-		return nil
-	}
-
-	pl := &operators.Packages{}
-	if err := nd.Decode(pl); err == nil && len(pl.PackageList) > 0 {
-		log.Debug().Msg("matching package operator")
-		e.Action = pl
-		return nil
-	}
-
-	svc := &operators.Services{}
-	if err := nd.Decode(svc); err == nil && len(svc.Service) > 0 {
-		log.Debug().Msg("matching service operator")
-		e.Action = svc
-		return nil
-	}
-
 	gt := &operators.Git{}
 	if err := nd.Decode(gt); err == nil && len(gt.Repo) > 0 {
 		log.Debug().Msg("matching git operator")

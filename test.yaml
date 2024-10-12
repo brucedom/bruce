@@ -14,3 +14,4 @@ steps:
 - copy: ./output.txt
   dest: ./output3.txt
 - cmd: rm output3.txt
+- cmd: sleep 5 && echo "Done"

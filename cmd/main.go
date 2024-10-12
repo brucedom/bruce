@@ -115,62 +115,6 @@ func main() {
 				},
 			},
 			{
-				Name:  "create",
-				Usage: "this command will create a new manifest or template for you to upload directly to your brucedom.com account and then install, you must have BRUCE_KEY env variable set to your API key from brucedom.com",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "kind",
-						Aliases: []string{"k"},
-						Value:   "template",
-						Usage:   "the kind of item to be uploaded, either 'template' or 'manifest'",
-					},
-					&cli.StringFlag{
-						Name:    "name",
-						Aliases: []string{"n"},
-						Value:   "",
-						Usage:   "name for the item to be uploaded",
-					},
-					&cli.StringFlag{
-						Name:    "description",
-						Aliases: []string{"d"},
-						Value:   "",
-						Usage:   "a brief description for the file to be uploaded, can be edited with more detail later.",
-					},
-				},
-				Action: func(cCtx *cli.Context) error {
-					if cCtx.Bool("debug") {
-						zerolog.SetGlobalLevel(zerolog.DebugLevel)
-					}
-					handlers.Create(cCtx.String("kind"), cCtx.String("name"), cCtx.String("description"), cCtx.Args().First())
-					return nil
-				},
-			},
-			{
-				Name:  "edit",
-				Usage: "this command will edit a manifest or template by re-uploading to your brucedom.com account, you must have BRUCE_KEY env variable set to your API key from brucedom.com, name and description can be edited directly on brucedom.com",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "kind",
-						Aliases: []string{"k"},
-						Value:   "template",
-						Usage:   "the kind of item to be uploaded, either 'template' or 'manifest'",
-					},
-					&cli.StringFlag{
-						Name:    "id",
-						Aliases: []string{"i"},
-						Value:   "",
-						Usage:   "id for the item to be uploaded",
-					},
-				},
-				Action: func(cCtx *cli.Context) error {
-					if cCtx.Bool("debug") {
-						zerolog.SetGlobalLevel(zerolog.DebugLevel)
-					}
-					handlers.Edit(cCtx.String("kind"), cCtx.String("id"), cCtx.Args().First())
-					return nil
-				},
-			},
-			{
 				Name:  "upgrade",
 				Usage: "this command will upgrade the bruce application to the latest version",
 				Action: func(cCtx *cli.Context) error {
