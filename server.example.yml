@@ -1,7 +1,7 @@
 ---
-endpoint: wss://configset.dev/workers
-runner-id: 2dc9799b-49d5-45c6-945e-c55d0061550f
-authorization: YOUR_EXECUTION_KEY
+endpoint: ws://local.nitecon.net:8888/workers
+runner-id: aaf59266-f457-45ed-88dd-a9a9c6462e09
+authorization: 1e2254a5-d04a-5664-a2f8-1399606024e6
 execution:
   - name: run all default
     action: default # you must have a default action.

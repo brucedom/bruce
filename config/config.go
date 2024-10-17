@@ -89,6 +89,12 @@ func (e *Steps) UnmarshalYAML(nd *yaml.Node) error {
 		e.Action = re
 		return nil
 	}
+	ap := &operators.API{}
+	if err := nd.Decode(ap); err == nil && len(ap.Endpoint) > 0 {
+		log.Debug().Msg("matching api operator")
+		e.Action = ap
+		return nil
+	}
 
 	log.Debug().Msg("no matching operator found, using null operator")
 	e.Action = &operators.NullOperator{}

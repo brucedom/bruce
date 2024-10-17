@@ -201,3 +201,12 @@ func loadTemplateFromRemote(remoteLoc string) (*template.Template, error) {
 	t = t.Funcs(templateFuncs)
 	return t.Parse(string(d))
 }
+
+func loadTemplateFromString(templateContent string) (*template.Template, error) {
+	// Create a new template with the provided name
+	t := template.New("txtTemplate")
+	// Attach custom template functions if any
+	t = t.Funcs(templateFuncs)
+	// Parse the provided template content (as string)
+	return t.Parse(templateContent)
+}

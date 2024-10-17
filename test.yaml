@@ -15,3 +15,7 @@ steps:
   dest: ./output3.txt
 - cmd: rm output3.txt
 - cmd: sleep 5 && echo "Done"
+- api: https://postman-echo.com/get?foo1=bar1&foo2=bar2
+  jsonKey: headers.host
+  setEnv: apiResponse
+- cmd: echo ${apiResponse} > /tmp/apiResponse.txt

@@ -91,7 +91,7 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 				}
 				queue.Add(d)
 			case "authentication":
-				log.Info().Msgf("Authentication response: %s", msg.Message)
+				log.Debug().Msgf("Authentication response: %s", msg.Message)
 				if msg.Message == "failed" {
 					log.Error().Msg("failed to authenticate")
 					conn.Close(websocket.StatusNormalClosure, "Unauthorized")
