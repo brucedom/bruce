@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"github.com/coder/websocket"
 	"github.com/rs/zerolog/log"
-	"sync"
 	"time"
 )
 
 type SocketMessage struct {
 	MsgType string `json:"MsgType"`
+	Action  string `json:"Action"`
 	Message string `json:"Message"`
 }
 
@@ -23,14 +23,17 @@ type AuthMessage struct {
 	Key     string `json:"key"`
 }
 
-var (
-	bexec     bool
-	bexecLock sync.RWMutex
-	curAction string
-)
+func RetrieveEvents(item string, execution []config.Execution) (config.Execution, error) {
+	for _, e := range execution {
+		if e.Action == item {
+			return e, nil
+		}
+	}
+	return config.Execution{}, fmt.Errorf("execution %s not found", item)
+}
 
 // DataHandler: Processes messages sent over the WebSocket connection
-func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string, execution []config.Execution) error {
+func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string, eventExecutions []config.Execution) error {
 	for {
 		select {
 		case <-ctx.Done():
@@ -97,29 +100,29 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 					conn.Close(websocket.StatusNormalClosure, "Unauthorized")
 				}
 			case "execute":
-				execAction := msg.Message
-				log.Info().Msgf("Execute request received: %s", execAction)
+				log.Debug().Msgf("Execute request received: %s", msg.Action)
 				// Match the action with the execution in config
-				for _, exec := range execution {
-					if exec.Action == execAction {
-						// Execute the steps for the corresponding action
-						t, err := config.LoadConfig(exec.Target)
-						if err != nil {
-							log.Error().Err(err).Msgf("Cannot continue without configuration data, bad config file or missing config file at: %s", exec.Target)
-							sendMessage("execute-failure", fmt.Sprintf("Cannot continue without configuration data, bad config file or missing config file at: %s", exec.Target))
-							continue
-						}
-						err = ExecuteSteps(t)
-						if err != nil {
-							log.Error().Err(err).Msg("ExecuteSteps error")
-							sendMessage("execute-failure", fmt.Sprintf("ExecuteSteps error: %s", err.Error()))
-						}
-						sendMessage("execute-success", execAction)
-					} else {
-						sendMessage("execute-failure", fmt.Sprintf("no such action: %s", execAction))
-						log.Info().Msgf("no such action: %s", execAction)
-					}
+				log.Debug().Msgf("Action: %s, Execution: %#v", msg.Action, eventExecutions)
+				actionEvent, err := RetrieveEvents(msg.Action, eventExecutions)
+				if err != nil {
+					log.Error().Err(err).Msgf("no such action: %s", msg.Action)
+					sendMessage("execute-failure", fmt.Sprintf("no such action: %s", msg.Action), msg.Action)
+					continue
 				}
+				// Execute the steps for the corresponding action
+				t, err := config.LoadConfig(actionEvent.Target)
+				if err != nil {
+					log.Error().Err(err).Msgf("Cannot continue without configuration data, bad event config for: %s", actionEvent.Target)
+					sendMessage("execute-failure", fmt.Sprintf("Cannot continue without configuration data, bad event action for: %s", actionEvent.Target), msg.Action)
+					continue
+				}
+				err = ExecuteSteps(t)
+				if err != nil {
+					log.Error().Err(err).Msg("ExecuteSteps error")
+					sendMessage("execute-failure", fmt.Sprintf("ExecuteSteps error: %s", err.Error()), msg.Action)
+				}
+				sendMessage("execute-success", "Execution completed", msg.Action)
+
 			default:
 				log.Warn().Msgf("DataHandler: Unknown message type: %s", msg.MsgType)
 			}
@@ -127,8 +130,8 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 	}
 }
 
-func sendMessage(sub, body string) {
-	authMsg := &SocketMessage{MsgType: sub, Message: body}
+func sendMessage(sub, body, action string) {
+	authMsg := &SocketMessage{MsgType: sub, Message: body, Action: action}
 	d, err := json.Marshal(authMsg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("DataHandler failed to encode basic message")
@@ -137,7 +140,7 @@ func sendMessage(sub, body string) {
 }
 
 // SocketRunner: Handles the connection and initializes DataHandler
-func SocketRunner(ctx context.Context, sockloc, skey, authkey string, execution []config.Execution) {
+func SocketRunner(ctx context.Context, sockloc, skey, authkey string, eventExecutions []config.Execution) {
 	// Initialize connection to WebSocket
 	for {
 		select {
@@ -157,7 +160,7 @@ func SocketRunner(ctx context.Context, sockloc, skey, authkey string, execution 
 			log.Debug().Msg("SocketRunner connected successfully")
 
 			// Start the DataHandler with the connection
-			err = DataHandler(ctx, c, skey, authkey, execution)
+			err = DataHandler(ctx, c, skey, authkey, eventExecutions)
 			if err != nil {
 				log.Debug().Err(err).Msg("DataHandler error, connection likely lost")
 				c.Close(websocket.StatusNormalClosure, "Connection lost, retrying...")

@@ -1,7 +1,7 @@
 ---
 endpoint: ws://local.nitecon.net:8888/workers
-runner-id: aaf59266-f457-45ed-88dd-a9a9c6462e09
-authorization: 0.c07xt8ceo9.jr3qjwuja9m
+runner-id: 2c714b5b-5f70-4480-80da-65e3d44c938f
+authorization: c81b5b4b-7fbe-5893-a327-f42edffaab7d
 execution:
   - name: run all default
     action: default # you must have a default action.
