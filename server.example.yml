@@ -1,10 +1,15 @@
 ---
 endpoint: ws://local.nitecon.net:8888/workers
 runner-id: aaf59266-f457-45ed-88dd-a9a9c6462e09
-authorization: 1e2254a5-d04a-5664-a2f8-1399606024e6
+authorization: 0.c07xt8ceo9.jr3qjwuja9m
 execution:
   - name: run all default
     action: default # you must have a default action.
     type: event # can also be cadence
     cadence: 10 # execution in minutes if cadence is chosen
     target: test.yaml # should be the path to the manifest to be executed, in this case main branch example config
+  - name: Second Test
+    action: SecondTest
+    type: event
+    cadence: 5
+    target: test2.yaml

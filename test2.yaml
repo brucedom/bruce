@@ -1,0 +1,5 @@
+---
+variables:
+  # note do not set Option here as it will be overwritten
+steps:
+  - cmd: echo "Secondary test command received"

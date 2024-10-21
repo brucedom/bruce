@@ -26,11 +26,11 @@ type AuthMessage struct {
 var (
 	bexec     bool
 	bexecLock sync.RWMutex
+	curAction string
 )
 
 // DataHandler: Processes messages sent over the WebSocket connection
 func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string, execution []config.Execution) error {
-	setExec(false)
 	for {
 		select {
 		case <-ctx.Done():
@@ -81,7 +81,7 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 					continue
 				}
 				queue.Add(d) // Queue the message to send it
-				log.Info().Msg("Sending authentication...")
+				log.Debug().Msg("Sending authentication...")
 			case "heartbeat":
 				log.Debug().Msg("Sending heartbeat")
 				d, err := json.Marshal(&SocketMessage{MsgType: "heartbeat", Message: "pong"})
@@ -97,23 +97,16 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 					conn.Close(websocket.StatusNormalClosure, "Unauthorized")
 				}
 			case "execute":
-				log.Info().Msgf("Execute request received: %s", msg.Message)
-				if isExecuting() {
-					log.Info().Msg("Execute request rejected, another execute request is already in progress")
-					sendMessage("execute-success", "already executing")
-					continue
-				} else {
-					setExec(true)
-				}
+				execAction := msg.Message
+				log.Info().Msgf("Execute request received: %s", execAction)
 				// Match the action with the execution in config
 				for _, exec := range execution {
-					if exec.Action == msg.Message {
+					if exec.Action == execAction {
 						// Execute the steps for the corresponding action
 						t, err := config.LoadConfig(exec.Target)
 						if err != nil {
 							log.Error().Err(err).Msgf("Cannot continue without configuration data, bad config file or missing config file at: %s", exec.Target)
 							sendMessage("execute-failure", fmt.Sprintf("Cannot continue without configuration data, bad config file or missing config file at: %s", exec.Target))
-							setExec(false)
 							continue
 						}
 						err = ExecuteSteps(t)
@@ -121,30 +114,17 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 							log.Error().Err(err).Msg("ExecuteSteps error")
 							sendMessage("execute-failure", fmt.Sprintf("ExecuteSteps error: %s", err.Error()))
 						}
-						sendMessage("execute-success", msg.Message)
+						sendMessage("execute-success", execAction)
 					} else {
-						sendMessage("execute-failure", fmt.Sprintf("no such action: %s", msg.Message))
+						sendMessage("execute-failure", fmt.Sprintf("no such action: %s", execAction))
+						log.Info().Msgf("no such action: %s", execAction)
 					}
 				}
-				setExec(false)
 			default:
 				log.Warn().Msgf("DataHandler: Unknown message type: %s", msg.MsgType)
 			}
 		}
 	}
-}
-
-func isExecuting() bool {
-	bexecLock.RLock()
-	bIsExec := bexec
-	bexecLock.RUnlock()
-	return bIsExec
-}
-
-func setExec(bIsExec bool) {
-	bexecLock.Lock()
-	bexec = bIsExec
-	bexecLock.Unlock()
 }
 
 func sendMessage(sub, body string) {
