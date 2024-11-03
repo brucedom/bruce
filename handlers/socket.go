@@ -8,13 +8,15 @@ import (
 	"fmt"
 	"github.com/coder/websocket"
 	"github.com/rs/zerolog/log"
+	"net/http"
 	"time"
 )
 
 type SocketMessage struct {
-	MsgType string `json:"MsgType"`
-	Action  string `json:"Action"`
-	Message string `json:"Message"`
+	MsgType  string `json:"MsgType"`
+	Action   string `json:"Action"`
+	ActionId string `json:"ActionId"`
+	Message  string `json:"Message"`
 }
 
 type AuthMessage struct {
@@ -32,8 +34,8 @@ func RetrieveEvents(item string, execution []config.Execution) (config.Execution
 	return config.Execution{}, fmt.Errorf("execution %s not found", item)
 }
 
-// DataHandler: Processes messages sent over the WebSocket connection
-func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string, eventExecutions []config.Execution) error {
+// DataHandler processes messages sent over the WebSocket connection
+func DataHandler(ctx context.Context, conn *websocket.Conn, eventExecutions []config.Execution) error {
 	for {
 		select {
 		case <-ctx.Done():
@@ -74,17 +76,6 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 
 			// Handle message based on type
 			switch msg.MsgType {
-			case "authenticate":
-				log.Debug().Msg("Authentication requested ")
-				// Prepare authentication message and send it directly to the WebSocket
-				authMsg := &SocketMessage{MsgType: "authenticate", Message: fmt.Sprintf("%s:%s", skey, authkey)}
-				d, err := json.Marshal(authMsg)
-				if err != nil {
-					log.Error().Err(err).Msg("DataHandler failed to read authentication message")
-					continue
-				}
-				queue.Add(d) // Queue the message to send it
-				log.Debug().Msg("Sending authentication...")
 			case "heartbeat":
 				log.Debug().Msg("Sending heartbeat")
 				d, err := json.Marshal(&SocketMessage{MsgType: "heartbeat", Message: "pong"})
@@ -93,12 +84,6 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 					continue
 				}
 				queue.Add(d)
-			case "authentication":
-				log.Debug().Msgf("Authentication response: %s", msg.Message)
-				if msg.Message == "failed" {
-					log.Error().Msg("failed to authenticate")
-					conn.Close(websocket.StatusNormalClosure, "Unauthorized")
-				}
 			case "execute":
 				log.Debug().Msgf("Execute request received: %s", msg.Action)
 				// Match the action with the execution in config
@@ -106,22 +91,22 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 				actionEvent, err := RetrieveEvents(msg.Action, eventExecutions)
 				if err != nil {
 					log.Error().Err(err).Msgf("no such action: %s", msg.Action)
-					sendMessage("execute-failure", fmt.Sprintf("no such action: %s", msg.Action), msg.Action)
+					sendMessage("execute-failure", fmt.Sprintf("no such action: %s", msg.Action), msg.Action, msg.ActionId)
 					continue
 				}
 				// Execute the steps for the corresponding action
 				t, err := config.LoadConfig(actionEvent.Target)
 				if err != nil {
 					log.Error().Err(err).Msgf("Cannot continue without configuration data, bad event config for: %s", actionEvent.Target)
-					sendMessage("execute-failure", fmt.Sprintf("Cannot continue without configuration data, bad event action for: %s", actionEvent.Target), msg.Action)
+					sendMessage("execute-failure", fmt.Sprintf("Cannot continue without configuration data, bad event action for: %s", actionEvent.Target), msg.Action, msg.ActionId)
 					continue
 				}
 				err = ExecuteSteps(t)
 				if err != nil {
 					log.Error().Err(err).Msg("ExecuteSteps error")
-					sendMessage("execute-failure", fmt.Sprintf("ExecuteSteps error: %s", err.Error()), msg.Action)
+					sendMessage("execute-failure", fmt.Sprintf("ExecuteSteps error: %s", err.Error()), msg.Action, msg.ActionId)
 				}
-				sendMessage("execute-success", "Execution completed", msg.Action)
+				sendMessage("execute-success", "Execution completed", msg.Action, msg.ActionId)
 
 			default:
 				log.Warn().Msgf("DataHandler: Unknown message type: %s", msg.MsgType)
@@ -130,8 +115,8 @@ func DataHandler(ctx context.Context, conn *websocket.Conn, skey, authkey string
 	}
 }
 
-func sendMessage(sub, body, action string) {
-	authMsg := &SocketMessage{MsgType: sub, Message: body, Action: action}
+func sendMessage(sub, body, action, actionId string) {
+	authMsg := &SocketMessage{MsgType: sub, Message: body, Action: action, ActionId: actionId}
 	d, err := json.Marshal(authMsg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("DataHandler failed to encode basic message")
@@ -150,7 +135,12 @@ func SocketRunner(ctx context.Context, sockloc, skey, authkey string, eventExecu
 
 		default:
 			log.Info().Msgf("SocketRunner load balancing request on: %s", sockloc)
-			c, _, err := websocket.Dial(ctx, sockloc, nil)
+			socOpts := &websocket.DialOptions{
+				HTTPHeader: http.Header{
+					"Authorization": {fmt.Sprintf("%s:%s", skey, authkey)},
+				},
+			}
+			c, _, err := websocket.Dial(ctx, sockloc, socOpts)
 			if err != nil {
 				log.Error().Err(err).Msg("SocketRunner failed to connect")
 				time.Sleep(5 * time.Second) // Wait before retrying connection
@@ -160,7 +150,7 @@ func SocketRunner(ctx context.Context, sockloc, skey, authkey string, eventExecu
 			log.Debug().Msg("SocketRunner connected successfully")
 
 			// Start the DataHandler with the connection
-			err = DataHandler(ctx, c, skey, authkey, eventExecutions)
+			err = DataHandler(ctx, c, eventExecutions)
 			if err != nil {
 				log.Debug().Err(err).Msg("DataHandler error, connection likely lost")
 				c.Close(websocket.StatusNormalClosure, "Connection lost, retrying...")
